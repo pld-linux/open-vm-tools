@@ -3,13 +3,14 @@
 %define		snap	2008.12.23
 %define		rev	137496
 %define		modsrc	modules/linux
+%define		rel	0.1
 %{expand:%%global	ccver	%(%{__cc} -dumpversion)}
 
 Summary:	VMWare guest utilities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware
 Name:		open-vm-tools
 Version:	%{snap}_%{rev}
-Release:	0.1
+Release:	%{rel}
 License:	GPL
 Group:		Applications/System
 Source0:	http://dl.sourceforge.net/sourceforge/open-vm-tools/%{name}-%{snap}-%{rev}.tar.gz
