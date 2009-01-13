@@ -1,0 +1,438 @@
+# http://open-vm-tools.wiki.sourceforge.net/Packaging
+
+Kernel components
+     __________________________________________________________________
+
+vmblock
+
+   This is a Linux kernel filesystem module. Internally, we've built it as
+   far back as 2.4.2, and we believe it to be generally compatible with
+   all 2.4 and 2.6 kernels. Ideally, it should be loaded before any of the
+   Tools userlevel components are allowed to start, though vmblock itself
+   has no dependencies. When loaded, vmblock will establish itself in
+   /proc/fs/vmblock and create two nodes therein, dev and mountPoint.
+   Before mounting a vmblock filesystem, ensure that /tmp/VMwareDnD exists
+   as a directory with permissions 1777, otherwise host to guest drag n'
+   drop operations won't work.
+   To mount, issue:
+mount -t vmblock none /proc/fs/vmblock/mountPoint
+
+   Once mounted, vmware-user can begin to make use of vmblock to assist
+   with DnD operations. Note that while vmware-user is running, it'll keep
+   an open file descriptor on /proc/fs/vmblock/dev, and thus all
+   vmware-user instances must be killed to unmount and unload vmblock.
+
+vmhgfs
+
+   This is also a Linux kernel filesystem module. Like vmblock, we've
+   built it as far back as 2.4.2 and believe it to be compatible with all
+   2.4 and 2.6 kernels. None of the Tools components depend on vmhgfs, nor
+   does it have any dependencies of its own, so it can be loaded at any
+   time in the boot process.
+   When mounting, one must use an NFS-like "<host>:<export>" syntax. The
+   <host> field must be ".host", while the <export> field can be "/", a
+   path to a specific Shared Folder, or a path to a subdirectory within
+   that Shared Folder. To mount, you must first build vmware-hgfsmounter
+   and install it setuid as /sbin/mount.vmhgfs, otherwise the mount
+   program won't properly call out to it. Note that mounting may fail if
+   Shared Folders are disabled in the host; don't be alarmed. The vmhgfs
+   filesystem supports a plethora of mount options, run vmware-hgfsmounter
+   -h to see them. We typically exclude vmhgfs from the locate database as
+   crawling the Shared Folders is time consuming. To do this, add "vmhgfs"
+   to PRUNEFS within updatedb's configuration file, typically found in
+   /etc/updatedb.conf.
+   We also typically mount vmhgfs via:
+mount -t vmhgfs .host:/ /mnt/hgfs
+
+   Or by adding this line to /etc/fstab:
+.host:/   /mnt/hgfs   vmhgfs  defaults  0 0
+
+   The net effect is that all Shared Folders appear and disappear at
+   /mnt/hgfs as they're added or removed.
+
+vmmemctl
+
+   This is a Linux kernel module. It isn't backed by a virtual hardware
+   device, so it must be loaded manually. It has no dependencies, nor do
+   any Tools components depend on it, so it can be loaded at any time
+   during the boot process. Once loaded, no further action is needed.
+   We've successfully built vmmemctl as far back as 2.2.16, and we believe
+   it to be generally compatible with all newer kernels as well.
+
+vmxnet
+
+   This is a Linux kernel device driver module that drives VMware's fast
+   networking device. As it is backed by real (virtual) hardware, it
+   should be automatically loaded by hotplug or udev as needed. For best
+   performance, it is recommended to enable TSO on all interfaces driven
+   by vmxnet using ethtool.
+   The shell code to do this might look like this:
+if which ethtool >/dev/null 2>&1; then
+   for ethif in `ifconfig -a | grep ^eth | cut -d' ' -f1`; do
+      ethtool -K $ethif tso on >/dev/null 2>&1
+   done
+fi
+
+   The VMware backend may present the fast networking device as an AMD
+   vlance device instead of the actual vmxnet device. If your kernel boots
+   using initrd, and the pcnet32 device driver is in it (pcnet32 drives
+   AMD vlance devices), you should also add vmxnet to the initrd.
+   Otherwise, it is possible that vmxnet will not be loaded. To have
+   vmxnet "morph" the vlance device into the fast networking device, make
+   the following modifications.
+     * If using modutils, some modifications to modules.conf are needed.
+       For each network interface in the VM, add the following line,
+       substituting <interface-name> with the name of the interface:
+
+alias <interface-name> vmnics
+
+   If there was at least one such interface, also add:
+probeall vmnics vmxnet pcnet32
+     * If using module-init-tools, add the following to modprobe.conf, to
+       modprobe.conf.local, or as a new file within modprobe.d (whichever
+       is appropriate for your distribution):
+
+install pcnet32 /sbin/modprobe -q --ignore-install vmxnet; /sbin/modprobe -q --i
+gnore-install pcnet32 $CMDLINE_OPTS; /bin/true;
+     * If using hotplug, you'll also need to modify
+       /etc/hotplug/pci.handmap so that hotplug will load vmxnet if it
+       detects a fast networking device. Add the following line to the end
+       of the file:
+
+vmxnet\t\t0x000015ad 0x00000720 0xffffffff 0xffffffff 0x00000000 0x00000000 0x0
+
+vmxnet3
+
+   This is a Linux kernel device driver module that drives VMware's second
+   fast networking device. As it is backed by real (virtual) hardware, it
+   should be automatically loaded by hotplug or udev as needed. Unlike the
+   older 'vmxnet' hardware, the 'vmxnet3' hardware does not morph and as
+   such the above modprobe-related logic isn't necessary. The module is
+   expected to build for kernels 2.6 and newer.
+
+vmsync
+
+   This is a Linux kernel module. It isn't backed by a virtual hardware
+   device, so it must be loaded manually. It is depended on by
+   vmware-guestd, so ideally it should be loaded prior to starting
+   vmware-guestd (though vmware-guestd can function without it). This
+   module is used for freezing and thawing the filesystem, and is only
+   relevant for kernel versions 2.6.6 and newer (it was in 2.6.6 that the
+   underlying freeze/thaw functionality that vmsync uses was added to
+   Linux). It won't build against older kenels.
+
+vmci
+
+   This is a Linux kernel device driver module that drives VMware's
+   inter-VM communication device. The device itself is backed by a
+   PCI-based virtual hardware implementation, so hotplug or udev should
+   load it at guest boot time in any VMs using hardware version 7. The
+   module is expected to build for all kernel versions 2.4 and later.
+
+vsock
+
+   This is a Linux kernel device driver module that provides datagram and
+   stream socket interfaces to the underlying VMCI device. The module
+   implements a Linux socket family and one of the files in the module,
+   vmci_sockets.h, provides the various constants and functions necessary
+   to create and, in the case of streams, connect sockets. The modulei s
+   expected to build for all kernel versions 2.4 and later.
+   The vsock module needs some attention from package maintainers if it is
+   to be installed properly:
+     * When the module is loaded, /dev/vsock will be created with
+       restricted permissions. Access to /dev/vsock is required to use
+       VMCI sockets, so it's recommended that permissions be relaxed via a
+       udev policy file. For reference, the VMware Tools init script
+       changes the permissions of /dev/vsock to 666.
+     * Normally, issuing a socket(2) system call will automatically load
+       the kernel module providing that socket family, but as the vsock
+       module is out-of-tree, there is no in-tree socket family
+       reservation for VMCI sockets. Before sockets are created, userspace
+       applications must call VMCISock_GetAFValue (defined in
+       vmci_sockets.h) which will instruct the vsock module to dynamically
+       acquire a socket family reservation from the kernel. This function
+       is implemented via ioctl(2) into the vsock module, so the vsock
+       module must be manually loaded by the user (perhaps using
+       /etc/modules).
+     * The vmci_sockets.h header should be installed in a system-wide
+       location. We recommend /usr/include/vmci.
+     * The vsock module depends on symbols from the vmci module, and so
+       the vmci module must be loaded first.
+
+User level components
+     __________________________________________________________________
+
+vmware-guestd
+
+   This is a userlevel daemon process. It should build successfully on
+   Linux (against glibc-2.1 and later), on FreeBSD (FreeBSD 3.2 and
+   later), and on Solaris (Solaris 9 and later). It expects to be run as
+   root, and has no dependency on X, so it can run in the console.
+   On Linux, VIX user impersonation is only possible by creating
+   /etc/pam.d/vmware-guestd with the following contents (adding "64" as a
+   suffix of "lib" if appropriate):
+#%PAM-1.0
+auth       sufficient       /lib[64]/security/pam_unix2.so shadow nullok
+auth       required         /lib[64]/security/pam_unix_auth.so shadow nullok
+account    sufficient       /lib[64]/security/pam_unix2.so
+account    required         /lib[64]/security/pam_unix_acct.so
+
+   For vmware-guestd to run the default soft power operation scripts, they
+   must be installed to /etc/vmware-tools with the executable bit
+   activated.
+   By default, vmware-guestd will broadcast the internal VMware Tools
+   backdoor version (the numerical value of TOOLS_VERSION_CURRENT defined
+   in vm_tools_version.h) to various VMware UIs and the VI SDK. This value
+   is used for upgrading decisions, but VMware's current product set
+   cannot upgrade open-vm-tools based packages. As such, it's important to
+   prevent such upgrades, by creating a configuration file for
+   vmware-guestd (named /etc/vmware-tools/tools.conf) with the following
+   contents:
+disable-tools-version = TRUE
+
+   This will cause vmware-guestd to broadcast the highest possible
+   backdoor version, which will in turn "trick" all clients into thinking
+   that the Tools are up-to-date and do not require an upgrade.
+
+vmware-user
+
+   vmware-user is a relatively small Gtk application that should run for
+   the duration of an interactive X11 session. It has no dependencies on
+   X11 service daemons (e.g., messaging buses), and so it may be launched
+   at any time during or after session startup.
+   Without a running vmware-user process, interactive X11 sessions will
+   lack GUI features such as drag-and-drop (DnD), file and text
+   copy/paste, dynamic display resizing, and Unity.
+   It should build successfully on Linux (glibc-2.1 and later, using
+   gtk-1.2), on FreeBSD (FreeBSD 5.3 and later, using gtk-1.2), and on
+   Solaris (Solaris 10 and later, using gtk-2.0). At the time of writing,
+   vmware-user does not support multiple concurrent users (that is, no
+   fast-user switching). As a gtk app, it depends on the presence of
+   certain common gtk shared objects (glib and gtk-1.2, among others) at
+   runtime.
+   On Linux, vmware-user depends on a mounted vmblock filesystem as
+   described above for proper host to guest DnD operations.
+   Drag-and-drop operations depend on a setuid wrapper,
+   vmware-user-suid-wrapper, described below.
+   X11 Autostart (Linux, FreeBSD)
+   A recent change for Linux to the Open VM Tools adjusted the nature of
+   the relationship between the VMware Tools service (vmware-guestd) and
+   the VMware user process (vmware-user). The two programs have been
+   completely decoupled, and as such vmware-guestd no longer attempts to
+   automatically start and stop vmware-user processes on users' behalf.
+   (This behavior is consistent with that of FreeBSD and Solaris.)
+   It's up to the Open VM Tools package maintainers to determine how to
+   best hook vmware-user into their users' X11 sessions. The following
+   information may help.
+   Modern display managers implementing the [109]XDG autostart spec
+   support launching applications at session startup via placing a
+   `vmware-user.desktop' file in a well-known location (e.g.,
+   /etc/X11/autostart or /usr/local/share/autostart). (An example file is
+   reprinted below.)
+[Desktop Entry]
+Encoding=UTF-8
+Exec=vmware-user
+Name=VMware User Agent
+X-KDE-autostart-phase=1
+NoDisplay=true
+
+   Other display managers, such as gdm (older versions) or xdm, may
+   instead require tweaking your distribution's Xsession (if applicable)
+   script.
+   X11 Autostart (Solaris)
+   Add a symbolic link to vmware-user within /usr/dt/config/Xsession.d.
+
+vmware-user-suid-wrapper
+
+   Operations on the vmblock filesystem are considered privileged, and as
+   such may only be issued on a file descriptor acquired by root. This is
+   accomplished by vmware-user-suid-wrapper, a small setuid wrapper whose
+   only purpose, on Linux, is to acquire a filesystem file descriptor,
+   drop superuser privileges, and then execute vmware-user. On FreeBSD and
+   Solaris, it does all of the above, but is also tasked with managing the
+   vmblock module. (Specifically it will reload the module and reload the
+   filesystem in order to keep vmblock and vmware-user in sync.)
+   The path to vmware-user used by this wrapper is defined at compile
+   time. By default, it's $(bindir)/vmware-user, but may be overridden by
+   defining the make variable VMWARE_USER_PATH.
+
+vmware-toolbox
+
+   This is a per-user process that, like vmware-user, must be run in an
+   X11 session, and isn't needed otherwise. Also like vmware-user, it does
+   not support multiple concurrent users, and depends on certain gtk
+   shared objects at runtime. It should build successfully on Linux
+   (glibc-2.1 and later, using gtk-1.2), on FreeBSD (FreeBSD 5.0 and
+   later, using gtk-1.2), and on Solaris (Solaris 10 and later, using
+   gtk-2.0).
+
+vmware-toolbox-cmd
+
+   This is a simple console application that has very few system
+   dependencies (though it does depend on guestlib, described below). It
+   is highly portable and should build just about everywhere. It can be
+   run as any user.
+
+vmware-checkvm
+
+   This is a simple console application. It should build successfully on
+   Linux (glibc-2.1 and later), on FreeBSD (FreeBSD 3.2 and later), and on
+   Solaris (Solaris 9 and later). It can be run as any user.
+
+vmware-xferlogs
+
+   This is a simple console application. It should build successfully on
+   Linux (glibc-2.1 and later), on FreeBSD (FreeBSD 3.2 and later), and on
+   Solaris (Solaris 9 and later). It can be run as any user.
+
+vmware-hgfsmounter
+
+   This is a console-based mount helper application. It is only necessary
+   on Linux, as vmhgfs must be mounted by passing a binary blob to the
+   driver. It should build successfully using glibc-2.1 or later. As
+   described earlier in the vmhgfs section, vmware-hgfsmounter must be
+   installed with setuid root permissions as /sbin/mount.vmhgfs.
+
+vmware-hgfsclient
+
+   This is a simple console application. It should build successfully on
+   Linux (glibc-2.1 and later), on FreeBSD (FreeBSD 3.2 and later), and on
+   Solaris (Solaris 9 and later). It can be run as any user.
+
+guestlib
+
+   This is a shared object intended for use in other applications. It
+   should build successfully on Linux (glibc-2.2 and later), on FreeBSD
+   (FreeBSD 3.2 and later), and on Solaris (Solaris 9 and later).
+
+Other
+     __________________________________________________________________
+
+sound
+
+   If you know that your distribution will run on pre-Workstation 5 VMs
+   (such as Workstation 4.5, or ESX Server 2.5), you must modify
+   /etc/modules.conf by replacing any instance of
+alias char-major-14 <garbage>
+
+   with
+alias char-major-14 es1371
+
+   and any instance of
+alias sound <garbage>
+
+   with
+alias sound es1371
+
+   Distributions using module-init-tools in lieu of modutils are probably
+   new enough so as not to need these modifications.
+
+gpm
+
+   If gpm is installed, its configuration must be modified so that it will
+   function properly with the virtual mouse. If your version of gpm
+   supports the "imps2" protocol (which you can find out by running "gpm
+   -t help"), you must replace MOUSETYPE and XMOUSETYPE within
+   /etc/sysconfig/mouse with
+MOUSETYPE=imps2
+XMOUSETYPE=IMPS/2
+
+Xorg setup
+
+   Configuring X to run well under VMware is rather tricky, as there are
+   quite a few pieces that can be matched up somewhat arbitrarily (the
+   Xorg/XFree86 version, the virtual hardware version, and the svga guest
+   driver version). For the sake of clarity, the instructions for
+   configuring XFree86 older than 4.0.0 are omitted. The
+   /etc/X11/xorg.conf or /etc/X11/XF86Config-4 file must be modified in a
+   number of ways. Here they are, described section by section.
+     * Mouse section:
+          + Replace the Driver field's value with "vmmouse"
+          + Add Option "Buttons" "5" if it doesn't already exist.
+          + Add Option "ZAxisMapping" "4" "5" if it doesn't already exist.
+          + Add Option "Emulate3Buttons" "true" if it doesn't already
+            exist.
+          + On Solaris, replace the Device field's value with
+            "/dev/kdmouse".
+          + On FreeBSD, replace the Device field's value with
+            "/dev/sysmouse" if /etc/rc.conf has "moused_enable" set to
+            "yes", or with "/dev/psm0" otherwise.
+          + On Linux and Solaris, replace the Protocol field's value with
+            "IMPS/2" if gpm was modified above, or with "ps/2" otherwise.
+          + On FreeBSD, replace the Protocol field's value with "SysMouse"
+            if /etc/rc.conf has "moused_enable" set to "yes", or with
+            "ps/2" otherwise.
+          + There is currently no standard way to detect the presence of
+            the VMware mouse device. Ubuntu is implementing a custom one
+            for Gutsy Gibbon using a 'vmware-detect' tool, and it is
+            recommended that this mechanism be adopted by other
+            distributions going forward.
+     * Device section:
+          + Replace the Driver field's value with "vmware".
+          + Note that the existing X autodetect infrastructure should
+            automatically detect the VMware video device. If so, the above
+            modification isn't necessary.
+     * Screen section:
+          + There should be Display subsections for depths 4, 8, 15, 16,
+            and 24.
+          + Each subsection should set ViewPort to 0 0.
+          + Each subsection should set Modes to a list of reasonable
+            resolutions. With the most modern VMware video driver (10.15.0
+            at the time of writing), the Modes list is only used by the X
+            login manager anyway, and so isn't terribly important.
+     * Monitor section:
+          + VendorName should be "VMware, Inc".
+          + HorizSync should be 1-10000.
+          + VertRefresh should be 1-10000.
+
+   It is possible that the X server will complain that no mouse device was
+   configured. This may occur in Xorg 7.2, Xserver 1.3, and in some
+   backported Xorg 7.1 releases (such as those shipped by Red Hat). A
+   workaround is to add a dummy InputDevice. To do this, add the following
+   to the configuration file:
+Section "InputDevice"
+        Identifier  "XWorkAround"
+        Driver      "void"
+EndSection
+
+   Then tie the new InputDevice to the server's configuration by adding
+InputDevice "XWorkAround"
+
+   to the ServerLayout section.
+
+File Layout
+     __________________________________________________________________
+
+   Here is a suggested layout for new files that may work for most
+   platforms:
+   vmblock /lib/modules/`uname -r`/kernel/fs/vmblock/vmblock.ko
+   vmhgfs /lib/modules/`uname -r`/kernel/fs/vmhgfs/vmhgfs.ko
+   If mounting vmhgfs to /mnt/hgfs /mnt/hgfs (directory)
+   vmmemctl /lib/modules/`uname -r`/kernel/drivers/misc/vmmemctl.ko
+   vmxnet /lib/modules/`uname -r`/kernel/drivers/net/vmxnet.ko
+   vmxnet3 /lib/modules/`uname -r`/kernel/drivers/net/vmxnet3.ko
+   vmsync /lib/modules/`uname -r`/kernel/drivers/misc/vmsync.ko
+   vmci /lib/modules/`uname -r`/kernel/drivers/misc/vmci.ko
+   vsock /lib/modules/`uname -r`/kernel/net/vsock/vsock.ko
+   vmci_sockets.h (vsock header file) /usr/include/vmci
+   vmblock DnD directory /tmp/VMwareDnD (directory mode 1777)
+   module-init-tools configuration /etc/modprobe.d/vmware-modules-config
+   (should include configuration for all the above kernel modules)
+   vmware-guestd /usr/sbin/vmware-guestd
+   vmware-guestd control script (distro-provided)
+   /etc/init.d/vmware-guestd
+   vmware-guestd pam.d configuration (Linux) /etc/pam.d/vmware-guestd
+   vmware-guestd configuration file /etc/vmware-tools/tools.conf
+   vmware-user /usr/bin/vmware-user
+   vmware-user autostart (Linux) /etc/xdg/autostart/vmware-user.desktop
+   vmware-user autostart (FreeBSD)
+   /usr/!X11R6/share/autostart/vmware-user.desktop
+   vmware-user autostart (Solaris) /usr/dt/config/Xsession.d (symlink to
+   vmware-user)
+   vmware-user-suid-wrapper /usr/bin/vmware-user-suid-wrapper
+   vmware-toolbox /usr/bin/vmware-toolbox
+   vmware-checkvm /usr/sbin/vmware-checkvm
+   vmware-xferlogs /usr/bin/vmware-xferlogs
+   vmware-hgfsmounter (Linux) /sbin/mount.vmhgfs (setuid root)
+   vmware-hgfsclient /usr/bin/vmware-hgfsclient
+   guestlib /usr/lib/libguestlib.so
