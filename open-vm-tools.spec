@@ -328,7 +328,6 @@ fi
 %attr(755,root,root) %{_bindir}/vmware-checkvm
 %attr(755,root,root) %{_bindir}/vmware-hgfsclient
 %attr(755,root,root) %{_bindir}/vmware-toolbox-cmd
-%attr(755,root,root) %{_bindir}/vmware-user
 %attr(4755,root,root) %{_bindir}/vmware-user-suid-wrapper
 %attr(755,root,root) %{_bindir}/vmware-xferlogs
 %attr(755,root,root) %{_sbindir}/mount.vmhgfs
