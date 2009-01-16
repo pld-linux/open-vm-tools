@@ -8,8 +8,6 @@
 %define		rev	137496
 %define		modsrc	modules/linux
 %define		rel	0.2
-%{expand:%%global	ccver	%(%{__cc} -dumpversion)}
-
 Summary:	VMWare guest utilities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware
 Name:		open-vm-tools
@@ -24,6 +22,7 @@ Source2:	%{name}-modprobe.d
 Source3:	%{name}-init
 Source4:	%{name}-vmware-user.desktop
 URL:		http://open-vm-tools.sourceforge.net/
+BuildRequires:	rpmbuild(macros) >= 1.453
 %if %{with userspace}
 BuildRequires:	gtk+-devel
 BuildRequires:	libdnet-devel
@@ -31,10 +30,10 @@ BuildRequires:	libicu-devel
 BuildRequires:	pkgconfig
 BuildRequires:	uriparser-devel
 BuildRequires:	xorg-lib-libX11-devel
+BuildRequires:	xorg-lib-libXScrnSaver-devel
 BuildRequires:	xorg-lib-libXinerama-devel
 BuildRequires:	xorg-lib-libXrandr-devel
 BuildRequires:	xorg-lib-libXtst-devel
-BuildRequires:	xorg-lib-libXScrnSaver-devel
 Requires:	ethtool
 %endif
 %if %{with kernel} && %{with dist_kernel}
@@ -50,7 +49,7 @@ VMWare guest utilities.
 Narzędzia dla systemu-gościa dla VMware.
 
 %package gui
-Summary:	VMware guest utitities.
+Summary:	VMware guest utitities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware.
 Group:		Applications/System
 Requires:	%{name} = %{epoch}:%{version}-%{release}
@@ -59,8 +58,8 @@ Requires:	%{name} = %{epoch}:%{version}-%{release}
 VMWare guest utilities. This package contains GUI part of tools.
 
 %description gui -l pl.UTF-8
-Narzędzia dla systemu-gościa dla VMware. Ten pakiet zawiera
-graficzną część narzędzi.
+Narzędzia dla systemu-gościa dla VMware. Ten pakiet zawiera graficzną
+część narzędzi.
 
 %package -n kernel%{_alt_kernel}-misc-pvscsi
 Summary:	VMware pvscsi Linux kernel module
@@ -230,15 +229,15 @@ cp %{SOURCE1} packaging
 
 %build
 %if %{with kernel}
-%build_kernel_modules -C %{modsrc}/pvscsi	-m pvscsi	SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{ccver}
-%build_kernel_modules -C %{modsrc}/vmblock	-m vmblock	SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{ccver}
-%build_kernel_modules -C %{modsrc}/vmci		-m vmci		SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{ccver}
-%build_kernel_modules -C %{modsrc}/vmhgfs	-m vmhgfs	SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{ccver}
-%build_kernel_modules -C %{modsrc}/vmmemctl	-m vmmemctl	SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{ccver}
-%build_kernel_modules -C %{modsrc}/vmsync	-m vmsync	SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{ccver}
-%build_kernel_modules -C %{modsrc}/vmxnet	-m vmxnet	SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{ccver}
-%build_kernel_modules -C %{modsrc}/vmxnet3	-m vmxnet3	SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{ccver}
-%build_kernel_modules -C %{modsrc}/vsock	-m vsock	SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{ccver}
+%build_kernel_modules -C %{modsrc}/pvscsi	-m pvscsi	SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}
+%build_kernel_modules -C %{modsrc}/vmblock	-m vmblock	SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}
+%build_kernel_modules -C %{modsrc}/vmci		-m vmci		SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}
+%build_kernel_modules -C %{modsrc}/vmhgfs	-m vmhgfs	SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}
+%build_kernel_modules -C %{modsrc}/vmmemctl	-m vmmemctl	SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}
+%build_kernel_modules -C %{modsrc}/vmsync	-m vmsync	SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}
+%build_kernel_modules -C %{modsrc}/vmxnet	-m vmxnet	SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}
+%build_kernel_modules -C %{modsrc}/vmxnet3	-m vmxnet3	SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}
+%build_kernel_modules -C %{modsrc}/vsock	-m vsock	SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}
 %endif
 
 %if %{with userspace}
@@ -335,7 +334,7 @@ fi
 %attr(755,root,root) %{_sbindir}/mount.vmhgfs
 %attr(755,root,root) %{_sbindir}/vmware-guestd
 %attr(755,root,root) %{_libdir}/lib*.so*
-%attr(755,root,root) /etc/rc.d/init.d/%{name}
+%attr(754,root,root) /etc/rc.d/init.d/%{name}
 /etc/modprobe.d/%{name}.conf
 
 %files gui
