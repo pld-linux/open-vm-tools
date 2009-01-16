@@ -1,0 +1,183 @@
+#!/bin/sh
+#
+# open-vm-tools	Helper scripts for open-vm-tools
+#
+# chkconfig:	345 90 20
+#
+# description:	Helper scripts for open-vm-tools
+#
+# $Id$
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+RETVAL=0
+
+module_exist() {
+	module=$1
+	kver=`uname -r`
+	[ -f /lib/modules/$kver/misc/$module.ko* ] && echo "yes" || echo "no"
+}
+
+start_vmxnet() {
+	# Check if the service is already running?
+	if [ ! -f /var/lock/subsys/open-vm-tools-vmxnet ]; then
+		msg_starting "Open Virtual Machine vmxnet script"
+		busy
+		if is_no `module_exist vmxnet`; then
+			fail
+			echo -e "\tCan't find vmxnet module"
+			RETVAL=1
+			return
+		fi
+
+		for ethif in `ifconfig -a | grep ^eth | cut -d' ' -f1`; do
+			/sbin/ethtool -K $ethif tso on > /dev/null 2>&1
+		done
+		ok
+		touch /var/lock/subsys/open-vm-tools-vmxnet
+	else
+		msg_already_running "Open Virtual Machine vmxnet script"
+	fi
+}
+
+stop_vmxnet() {
+	if [ -f /var/lock/subsys/open-vm-tools-vmxnet ]; then
+		msg_stopping "Open Virtual Machine vmxnet script"
+		busy
+		rm -f /var/lock/subsys/open-vm-tools-vmxnet
+		ok
+	else
+		msg_not_running "Open Virtual Machine vmxnet script"
+	fi
+}
+
+start_vmblock() {
+	# vmblock is not required and unsupported on ESX so first check
+	# if it's installed then try to use
+	is_no `module_exist vmblock` && return
+
+	# Check if the service is already running?
+	if [ ! -f /var/lock/subsys/open-vm-tools-vmblock ]; then
+		_modprobe single vmblock
+		msg_starting "Open Virtual Machine vmblock script"
+		busy
+		mkdir -p /tmp/VMwareDnD
+		chmod 1777 /tmp/VMwareDnD
+		mount -t vmblock none /proc/fs/vmblock/mountPoint
+		RETVAL=$?
+		[ $RETVAL -eq 0 ] && touch /var/lock/subsys/open-vm-tools-vmblock && ok && return
+		fail
+	else
+		msg_already_running "Open Virtual Machine vmblock script"
+	fi
+}
+
+stop_vmblock() {
+	is_no `module_exist vmblock` && return
+
+	if [ -f /var/lock/subsys/open-vm-tools-vmblock ]; then
+		msg_stopping "Open Virtual Machine vmblock script"
+		busy
+		umount /proc/fs/vmblock/mountPoint
+		RETVAL=$?
+		[ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/open-vm-tools-vmblock && ok && return
+		fail
+	else
+		msg_not_running "Open Virtual Machine vmblock script"
+	fi
+}
+
+start_vmhgfs() {
+	# vmhgfs is not required and usupported on ESX so first check
+	# if it's installed then try to use
+	is_no `module_exist vmhgfs` && return
+
+	# Check if the service is already running?
+	if [ ! -f /var/lock/subsys/open-vm-tools-vmhgfs ]; then
+		_modprobe single vmhgfs
+		msg_starting "Open Virtual Machine vmhgfs script"
+		busy
+		mkdir -p /mnt/hgfs
+		mount -t vmhgfs .host:/ /mnt/hgfs
+		RETVAL=$?
+		[ $RETVAL -eq 0 ] && touch /var/lock/subsys/open-vm-tools-vmhgfs && ok && return
+		fail
+	else
+		msg_already_running "Open Virtual Machine vmhgfs script"
+	fi
+}
+
+stop_vmhgfs() {
+	is_no `module_exist vmhgfs` && return
+
+	if [ -f /var/lock/subsys/open-vm-tools-vmhgfs ]; then
+		msg_stopping "Open Virtual Machine vmhgfs script"
+		busy
+		umount /mnt/hgfs
+		RETVAL=$?
+		[ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/open-vm-tools-vmhgfs && ok && return
+		fail
+	else
+		msg_not_running "Open Virtual Machine vmhgfs script"
+	fi
+}
+
+start_vmsync() {
+	# Check if the service is already running?
+	if [ ! -f /var/lock/subsys/open-vm-tools-vmsync ]; then
+		_modprobe single vmsync
+		msg_starting "Open Virtual Machine vmsync script"
+		daemon /usr/sbin/vmware-guestd --background /var/run/vmware-guestd.pid
+		RETVAL=$?
+		[ $RETVAL -eq 0 ] && touch /var/lock/subsys/open-vm-tools-vmsync
+	else
+		msg_already_running "Open Virtual Machine vmsync script"
+	fi
+}
+
+stop_vmsync() {
+	if [ -f /var/lock/subsys/open-vm-tools-vmsync ]; then
+		msg_stopping "Open Virtual Machine vmsync script"
+		killproc --pidfile vmware-guestd.pid vmware-guestd
+		rm -f /var/lock/subsys/open-vm-tools-vmsync
+	else
+		msg_not_running "Open Virtual Machine vmsync script"
+	fi
+}
+
+start() {
+	start_vmxnet
+	start_vmblock
+	start_vmhgfs
+	_modprobe single vmmemctl
+	_modprobe single vmci
+	_modprobe single vsock
+	start_vmsync
+}
+
+stop() {
+	stop_vmxnet
+	stop_vmblock
+	stop_vmhgfs
+	stop_vmsync
+}
+
+# See how we were called.
+case "$1" in
+  start)
+	start
+	;;
+  stop)
+  	stop
+	;;
+  restart)
+  	stop
+  	start
+  	;;
+  *)
+	msg_usage "$0 {start|stop|restart}"
+	exit 3
+esac
+
+exit $RETVAL
