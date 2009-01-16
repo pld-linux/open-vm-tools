@@ -7,7 +7,7 @@
 %define		snap	2008.12.23
 %define		rev	137496
 %define		modsrc	modules/linux
-%define		rel	0.1
+%define		rel	0.2
 %{expand:%%global	ccver	%(%{__cc} -dumpversion)}
 
 Summary:	VMWare guest utilities
@@ -20,6 +20,9 @@ Group:		Applications/System
 Source0:	http://dl.sourceforge.net/open-vm-tools/%{name}-%{snap}-%{rev}.tar.gz
 # Source0-md5:	2c457c9bcee711140ec137a6829525eb
 Source1:	%{name}-packaging
+Source2:	%{name}-modprobe.d
+Source3:	%{name}-init
+Source4:	%{name}-vmware-user.desktop
 URL:		http://open-vm-tools.sourceforge.net/
 %if %{with userspace}
 BuildRequires:	gtk+-devel
@@ -32,6 +35,7 @@ BuildRequires:	xorg-lib-libXinerama-devel
 BuildRequires:	xorg-lib-libXrandr-devel
 BuildRequires:	xorg-lib-libXtst-devel
 BuildRequires:	xorg-lib-libXScrnSaver-devel
+Requires:	ethtool
 %endif
 %if %{with kernel} && %{with dist_kernel}
 BuildRequires:	kernel%{_alt_kernel}-module-build >= 3:2.6.16
@@ -44,6 +48,19 @@ VMWare guest utilities.
 
 %description -l pl.UTF-8
 Narzędzia dla systemu-gościa dla VMware.
+
+%package gui
+Summary:	VMware guest utitities.
+Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware.
+Group:		Applications/System
+Requires:	%{name} = %{epoch}:%{version}-%{release}
+
+%description gui
+VMWare guest utilities. This package contains GUI part of tools.
+
+%description gui -l pl.UTF-8
+Narzędzia dla systemu-gościa dla VMware. Ten pakiet zawiera
+graficzną część narzędzi.
 
 %package -n kernel%{_alt_kernel}-misc-pvscsi
 Summary:	VMware pvscsi Linux kernel module
@@ -253,10 +270,25 @@ rm $RPM_BUILD_ROOT/sbin/mount.vmhgfs
 ln -sf %{_sbindir}/mount.vmhgfs $RPM_BUILD_ROOT/sbin/mount.vmhgfs
 mv $RPM_BUILD_ROOT/etc/pam.d/{vmware-guestd*,vmware-guestd}
 rm -f $RPM_BUILD_ROOT%{_libdir}/lib*.{a,la}
+
+install -d $RPM_BUILD_ROOT/etc/{modprobe.d,rc.d/init.d,xdg/autostart}
+cp %{SOURCE2} $RPM_BUILD_ROOT/etc/modprobe.d/%{name}.conf
+cp %{SOURCE3} $RPM_BUILD_ROOT/etc/rc.d/init.d/%{name}
+cp %{SOURCE4} $RPM_BUILD_ROOT/etc/xdg/autostart/vmware-user.desktop
 %endif
 
 %clean
 rm -rf $RPM_BUILD_ROOT
+
+%post
+/sbin/chkconfig --add open-vm-tools
+%service open-vm-tools restart "Open Virtual Machine"
+
+%preun
+if [ "$1" = "0" ]; then
+	%service open-vm-tools stop
+	/sbin/chkconfig --del open-vm-tools
+fi
 
 %post	-n kernel%{_alt_kernel}-misc-pvscsi
 %depmod %{_kernel_ver}
@@ -296,7 +328,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) /sbin/mount.vmhgfs
 %attr(755,root,root) %{_bindir}/vmware-checkvm
 %attr(755,root,root) %{_bindir}/vmware-hgfsclient
-%attr(755,root,root) %{_bindir}/vmware-toolbox
 %attr(755,root,root) %{_bindir}/vmware-toolbox-cmd
 %attr(755,root,root) %{_bindir}/vmware-user
 %attr(4755,root,root) %{_bindir}/vmware-user-suid-wrapper
@@ -304,7 +335,16 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_sbindir}/mount.vmhgfs
 %attr(755,root,root) %{_sbindir}/vmware-guestd
 %attr(755,root,root) %{_libdir}/lib*.so*
+%attr(755,root,root) /etc/rc.d/init.d/%{name}
+/etc/modprobe.d/%{name}.conf
+
+%files gui
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_bindir}/vmware-toolbox
+%attr(755,root,root) %{_bindir}/vmware-user
 %{_desktopdir}/vmware-user.desktop
+/etc/xdg/autostart/vmware-user.desktop
+
 %endif
 
 %if %{with kernel}
