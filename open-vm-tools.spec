@@ -7,7 +7,7 @@
 %define		snap	2008.12.23
 %define		rev	137496
 %define		modsrc	modules/linux
-%define		rel	0.2
+%define		rel	0.3
 Summary:	VMWare guest utilities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware
 Name:		open-vm-tools
@@ -269,7 +269,9 @@ rm -rf $RPM_BUILD_ROOT
 
 rm $RPM_BUILD_ROOT/sbin/mount.vmhgfs
 ln -sf %{_sbindir}/mount.vmhgfs $RPM_BUILD_ROOT/sbin/mount.vmhgfs
-mv $RPM_BUILD_ROOT/etc/pam.d/{vmware-guestd*,vmware-guestd}
+%ifarch %{x8664}
+mv $RPM_BUILD_ROOT/etc/pam.d/vmware-guestd-x64 $RPM_BUILD_ROOT/etc/pam.d/vmware-guestd
+%endif
 rm -f $RPM_BUILD_ROOT%{_libdir}/lib*.{a,la}
 
 install -d $RPM_BUILD_ROOT/etc/{modprobe.d,rc.d/init.d,xdg/autostart}
