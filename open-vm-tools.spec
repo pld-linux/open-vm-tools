@@ -24,8 +24,10 @@ Source4:	%{name}-vmware-user.desktop
 URL:		http://open-vm-tools.sourceforge.net/
 BuildRequires:	rpmbuild(macros) >= 1.453
 %if %{with userspace}
+BuildRequires:	glib2-devel >= 2.6.0
 BuildRequires:	gtk+-devel
 BuildRequires:	libdnet-devel
+BuildRequires:	libfuse-devel
 BuildRequires:	libicu-devel
 BuildRequires:	pkgconfig
 BuildRequires:	uriparser-devel
