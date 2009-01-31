@@ -13,6 +13,19 @@
 
 RETVAL=0
 
+is_ESX_running() {
+    if [ ! -f /usr/bin/vmware-checkvm ] ; then
+	echo no
+	return
+    fi
+    
+    if /usr/bin/vmware-checkvm -p | grep -q ESX; then
+	echo yes
+    else
+	echo no
+    fi
+}
+
 module_exist() {
 	module=$1
 	kver=`uname -r`
@@ -148,8 +161,10 @@ stop_vmsync() {
 
 start() {
 	start_vmxnet
-	start_vmblock
-	start_vmhgfs
+	if is_no `is_ESX_running`; then
+		start_vmblock
+		start_vmhgfs
+	fi
 	_modprobe single vmmemctl
 	_modprobe single vmci
 	_modprobe single vsock
