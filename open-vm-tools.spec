@@ -4,10 +4,10 @@
 %bcond_without	dist_kernel	# without distribution kernel
 %bcond_without	userspace	# without userspace package
 #
-%define		snap	2008.12.23
-%define		rev	137496
+%define		snap	2009.01.21
+%define		rev	142982
 %define		modsrc	modules/linux
-%define		rel	0.3
+%define		rel	0.1
 Summary:	VMWare guest utilities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware
 Name:		open-vm-tools
@@ -16,7 +16,7 @@ Release:	%{rel}
 License:	GPL
 Group:		Applications/System
 Source0:	http://dl.sourceforge.net/open-vm-tools/%{name}-%{snap}-%{rev}.tar.gz
-# Source0-md5:	2c457c9bcee711140ec137a6829525eb
+# Source0-md5:	cecb6bc82be1fbad56998133ae89d5a3
 Source1:	%{name}-packaging
 Source2:	%{name}-modprobe.d
 Source3:	%{name}-init
@@ -357,6 +357,7 @@ fi
 %files -n kernel%{_alt_kernel}-misc-vmblock
 %defattr(644,root,root,755)
 /lib/modules/%{_kernel_ver}/misc/vmblock.ko*
+%attr(755,root,root) %{_bindir}/vmware-vmblock-fuse
 
 %files -n kernel%{_alt_kernel}-misc-vmci
 %defattr(644,root,root,755)
