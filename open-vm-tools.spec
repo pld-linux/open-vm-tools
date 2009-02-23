@@ -26,9 +26,12 @@ BuildRequires:	rpmbuild(macros) >= 1.453
 %if %{with userspace}
 BuildRequires:	glib2-devel >= 2.6.0
 BuildRequires:	gtk+-devel
+BuildRequires:	gtk+2-devel
 BuildRequires:	libdnet-devel
 BuildRequires:	libfuse-devel
 BuildRequires:	libicu-devel
+BuildRequires:	libpng-devel
+BuildRequires:	libstdc++-devel
 BuildRequires:	pkgconfig
 BuildRequires:	uriparser-devel
 BuildRequires:	xorg-lib-libX11-devel
