@@ -4,8 +4,8 @@
 %bcond_without	dist_kernel	# without distribution kernel
 %bcond_without	userspace	# without userspace package
 #
-%define		snap	2009.01.21
-%define		rev	142982
+%define		snap	2009.02.18
+%define		rev	148847
 %define		modsrc	modules/linux
 %define		rel	1
 Summary:	VMWare guest utilities
@@ -16,7 +16,7 @@ Release:	%{rel}
 License:	GPL
 Group:		Applications/System
 Source0:	http://dl.sourceforge.net/open-vm-tools/%{name}-%{snap}-%{rev}.tar.gz
-# Source0-md5:	cecb6bc82be1fbad56998133ae89d5a3
+# Source0-md5:	6e473ebdf29f1b15388149bc2fde6941
 Source1:	%{name}-packaging
 Source2:	%{name}-modprobe.d
 Source3:	%{name}-init
@@ -333,7 +333,9 @@ fi
 %dir /etc/vmware-tools
 %attr(755,root,root) /etc/vmware-tools/*vm-*
 %config(noreplace) %verify(not md5 mtime size) /etc/vmware-tools/tools.conf
+%dir /etc/vmware-tools/plugins
 %attr(755,root,root) /sbin/mount.vmhgfs
+%attr(755,root,root) %{_bindir}/vmtoolsd
 %attr(755,root,root) %{_bindir}/vmware-checkvm
 %attr(755,root,root) %{_bindir}/vmware-hgfsclient
 %attr(755,root,root) %{_bindir}/vmware-toolbox-cmd
@@ -342,6 +344,17 @@ fi
 %attr(755,root,root) %{_sbindir}/mount.vmhgfs
 %attr(755,root,root) %{_sbindir}/vmware-guestd
 %attr(755,root,root) %{_libdir}/lib*.so*
+%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libguestInfo.so
+%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libhgfsServer.so
+%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libpowerOps.so
+%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libtimeSync.so
+%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libvix.so
+%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libvmbackup.so
+%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libhgfsServer.so
+%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libresolutionSet.so
+%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libvix.so
+%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libvixUser.so
+
 %attr(754,root,root) /etc/rc.d/init.d/%{name}
 /etc/modprobe.d/%{name}.conf
 
@@ -350,7 +363,7 @@ fi
 %attr(755,root,root) %{_bindir}/vmware-toolbox
 %attr(755,root,root) %{_bindir}/vmware-user
 %{_desktopdir}/vmware-user.desktop
-/etc/xdg/autostart/vmware-user.desktop
+%{_sysconfdir}/xdg/autostart/vmware-user.desktop
 
 %endif
 
