@@ -7,7 +7,7 @@
 %define		snap	2009.03.18
 %define		rev	154848
 %define		modsrc	modules/linux
-%define		rel	1
+%define		rel	2	
 Summary:	VMWare guest utilities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware
 Name:		open-vm-tools
@@ -346,12 +346,15 @@ fi
 %attr(755,root,root) %{_sbindir}/mount.vmhgfs
 %attr(755,root,root) %{_sbindir}/vmware-guestd
 %attr(755,root,root) %{_libdir}/lib*.so*
+%dir %{_libdir}/open-vm-tools/plugins
+%dir %{_libdir}/open-vm-tools/plugins/vmsvc
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libguestInfo.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libhgfsServer.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libpowerOps.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libtimeSync.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libvix.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libvmbackup.so
+%dir %{_libdir}/open-vm-tools/plugins/vmusr
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libhgfsServer.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libresolutionSet.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libvix.so
