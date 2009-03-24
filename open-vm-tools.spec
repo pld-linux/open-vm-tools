@@ -4,8 +4,8 @@
 %bcond_without	dist_kernel	# without distribution kernel
 %bcond_without	userspace	# without userspace package
 #
-%define		snap	2009.02.18
-%define		rev	148847
+%define		snap	2009.03.18
+%define		rev	154848
 %define		modsrc	modules/linux
 %define		rel	1
 Summary:	VMWare guest utilities
@@ -16,7 +16,7 @@ Release:	%{rel}
 License:	GPL
 Group:		Applications/System
 Source0:	http://dl.sourceforge.net/open-vm-tools/%{name}-%{snap}-%{rev}.tar.gz
-# Source0-md5:	6e473ebdf29f1b15388149bc2fde6941
+# Source0-md5:	23d577a1bc07fa61bcd5352e94f05ed6
 Source1:	%{name}-packaging
 Source2:	%{name}-modprobe.d
 Source3:	%{name}-init
@@ -27,6 +27,7 @@ BuildRequires:	rpmbuild(macros) >= 1.453
 BuildRequires:	glib2-devel >= 2.6.0
 BuildRequires:	gtk+-devel
 BuildRequires:	gtk+2-devel
+BuildRequires:	gtkmm-devel >= 2.4.0
 BuildRequires:	libdnet-devel
 BuildRequires:	libfuse-devel
 BuildRequires:	libicu-devel
@@ -275,7 +276,7 @@ rm -rf $RPM_BUILD_ROOT
 rm $RPM_BUILD_ROOT/sbin/mount.vmhgfs
 ln -sf %{_sbindir}/mount.vmhgfs $RPM_BUILD_ROOT/sbin/mount.vmhgfs
 %ifarch %{x8664}
-mv $RPM_BUILD_ROOT/etc/pam.d/vmware-guestd-x64 $RPM_BUILD_ROOT/etc/pam.d/vmware-guestd
+mv $RPM_BUILD_ROOT/etc/pam.d/vmtoolsd-x64 $RPM_BUILD_ROOT/etc/pam.d/vmtoolsd
 %endif
 rm -f $RPM_BUILD_ROOT%{_libdir}/lib*.{a,la}
 
@@ -329,15 +330,16 @@ fi
 %files
 %defattr(644,root,root,755)
 %doc AUTHORS ChangeLog NEWS README packaging
-%config(noreplace) %verify(not md5 mtime size) /etc/pam.d/vmware-guestd
+%config(noreplace) %verify(not md5 mtime size) /etc/pam.d/vmtoolsd
 %dir /etc/vmware-tools
 %attr(755,root,root) /etc/vmware-tools/*vm-*
-%config(noreplace) %verify(not md5 mtime size) /etc/vmware-tools/tools.conf
+#%config(noreplace) %verify(not md5 mtime size) /etc/vmware-tools/tools.conf
 %dir /etc/vmware-tools/plugins
 %attr(755,root,root) /sbin/mount.vmhgfs
 %attr(755,root,root) %{_bindir}/vmtoolsd
 %attr(755,root,root) %{_bindir}/vmware-checkvm
 %attr(755,root,root) %{_bindir}/vmware-hgfsclient
+%attr(755,root,root) %{_bindir}/vmware-rpctool
 %attr(755,root,root) %{_bindir}/vmware-toolbox-cmd
 %attr(4755,root,root) %{_bindir}/vmware-user-suid-wrapper
 %attr(755,root,root) %{_bindir}/vmware-xferlogs
