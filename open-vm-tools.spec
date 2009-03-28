@@ -7,7 +7,7 @@
 %define		snap	2009.03.18
 %define		rev	154848
 %define		modsrc	modules/linux
-%define		rel	2	
+%define		rel	3	
 Summary:	VMWare guest utilities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware
 Name:		open-vm-tools
@@ -345,6 +345,7 @@ fi
 %attr(755,root,root) %{_bindir}/vmware-xferlogs
 %attr(755,root,root) %{_sbindir}/mount.vmhgfs
 %attr(755,root,root) %{_sbindir}/vmware-guestd
+%dir %{_libdir}/open-vm-tools
 %attr(755,root,root) %{_libdir}/lib*.so*
 %dir %{_libdir}/open-vm-tools/plugins
 %dir %{_libdir}/open-vm-tools/plugins/vmsvc
