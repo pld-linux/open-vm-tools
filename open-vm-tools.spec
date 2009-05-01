@@ -4,10 +4,10 @@
 %bcond_without	dist_kernel	# without distribution kernel
 %bcond_without	userspace	# without userspace package
 #
-%define		snap	2009.03.18
-%define		rev	154848
+%define		snap	2009.04.23
+%define		rev	162451
 %define		modsrc	modules/linux
-%define		rel	3	
+%define		rel	0.1
 Summary:	VMWare guest utilities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware
 Name:		open-vm-tools
@@ -16,7 +16,7 @@ Release:	%{rel}
 License:	GPL
 Group:		Applications/System
 Source0:	http://dl.sourceforge.net/open-vm-tools/%{name}-%{snap}-%{rev}.tar.gz
-# Source0-md5:	23d577a1bc07fa61bcd5352e94f05ed6
+# Source0-md5:	3ccdf1d0b45926ca98740994b8e52cdc
 Source1:	%{name}-packaging
 Source2:	%{name}-modprobe.d
 Source3:	%{name}-init
@@ -234,6 +234,7 @@ Moduł jądra Linuksa VMware vsock.
 %prep
 %setup -q -n %{name}-%{snap}-%{rev}
 cp %{SOURCE1} packaging
+%{__sed} -i -e 's|##{BUILD_OUTPUT}##|build|' docs/api/doxygen.conf
 
 %build
 %if %{with kernel}
@@ -344,7 +345,6 @@ fi
 %attr(4755,root,root) %{_bindir}/vmware-user-suid-wrapper
 %attr(755,root,root) %{_bindir}/vmware-xferlogs
 %attr(755,root,root) %{_sbindir}/mount.vmhgfs
-%attr(755,root,root) %{_sbindir}/vmware-guestd
 %dir %{_libdir}/open-vm-tools
 %attr(755,root,root) %{_libdir}/lib*.so*
 %dir %{_libdir}/open-vm-tools/plugins
