@@ -7,7 +7,7 @@
 %define		snap	2009.04.23
 %define		rev	162451
 %define		modsrc	modules/linux
-%define		rel	0.1
+%define		rel	1
 Summary:	VMWare guest utilities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware
 Name:		open-vm-tools
@@ -345,6 +345,7 @@ fi
 %attr(755,root,root) %{_bindir}/vmware-toolbox-cmd
 %attr(4755,root,root) %{_bindir}/vmware-user-suid-wrapper
 %attr(755,root,root) %{_bindir}/vmware-xferlogs
+%attr(755,root,root) %{_bindir}/vmware-vmblock-fuse
 %attr(755,root,root) %{_sbindir}/mount.vmhgfs
 %dir %{_libdir}/open-vm-tools
 %attr(755,root,root) %{_libdir}/lib*.so*
@@ -382,7 +383,6 @@ fi
 %files -n kernel%{_alt_kernel}-misc-vmblock
 %defattr(644,root,root,755)
 /lib/modules/%{_kernel_ver}/misc/vmblock.ko*
-%attr(755,root,root) %{_bindir}/vmware-vmblock-fuse
 
 %files -n kernel%{_alt_kernel}-misc-vmci
 %defattr(644,root,root,755)
