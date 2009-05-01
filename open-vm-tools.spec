@@ -238,6 +238,7 @@ cp %{SOURCE1} packaging
 
 %build
 %if %{with kernel}
+export OVT_SOURCE_DIR=$PWD
 %build_kernel_modules -C %{modsrc}/pvscsi	-m pvscsi	SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}
 %build_kernel_modules -C %{modsrc}/vmblock	-m vmblock	SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}
 %build_kernel_modules -C %{modsrc}/vmci		-m vmci		SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}
