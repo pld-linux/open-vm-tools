@@ -25,7 +25,6 @@ URL:		http://open-vm-tools.sourceforge.net/
 BuildRequires:	rpmbuild(macros) >= 1.453
 %if %{with userspace}
 BuildRequires:	glib2-devel >= 2.6.0
-BuildRequires:	gtk+-devel
 BuildRequires:	gtk+2-devel
 BuildRequires:	gtkmm-devel >= 2.4.0
 BuildRequires:	libdnet-devel

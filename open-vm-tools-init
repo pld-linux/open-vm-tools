@@ -141,7 +141,7 @@ start_vmsync() {
 	if [ ! -f /var/lock/subsys/open-vm-tools-vmsync ]; then
 		_modprobe single vmsync
 		msg_starting "Open Virtual Machine vmsync script"
-		daemon /usr/sbin/vmware-guestd --background /var/run/vmware-guestd.pid
+		daemon /usr/sbin/vmtoolsd --background /var/run/vmtoolsd.pid
 		RETVAL=$?
 		[ $RETVAL -eq 0 ] && touch /var/lock/subsys/open-vm-tools-vmsync
 	else
@@ -152,7 +152,7 @@ start_vmsync() {
 stop_vmsync() {
 	if [ -f /var/lock/subsys/open-vm-tools-vmsync ]; then
 		msg_stopping "Open Virtual Machine vmsync script"
-		killproc --pidfile vmware-guestd.pid vmware-guestd
+		killproc --pidfile vmtoolsd.pid vmtoolsd
 		rm -f /var/lock/subsys/open-vm-tools-vmsync
 	else
 		msg_not_running "Open Virtual Machine vmsync script"
