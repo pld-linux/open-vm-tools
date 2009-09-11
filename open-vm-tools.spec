@@ -277,9 +277,6 @@ rm -rf $RPM_BUILD_ROOT
 
 rm $RPM_BUILD_ROOT/sbin/mount.vmhgfs
 ln -sf %{_sbindir}/mount.vmhgfs $RPM_BUILD_ROOT/sbin/mount.vmhgfs
-%ifarch %{x8664}
-mv $RPM_BUILD_ROOT/etc/pam.d/vmtoolsd-x64 $RPM_BUILD_ROOT/etc/pam.d/vmtoolsd
-%endif
 rm -f $RPM_BUILD_ROOT%{_libdir}/lib*.{a,la}
 
 install -d $RPM_BUILD_ROOT/etc/{modprobe.d,rc.d/init.d,xdg/autostart}
