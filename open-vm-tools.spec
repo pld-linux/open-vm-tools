@@ -4,8 +4,8 @@
 %bcond_without	dist_kernel	# without distribution kernel
 %bcond_without	userspace	# without userspace package
 #
-%define		snap	2009.09.18
-%define		rev	193784
+%define		snap	2009.11.16
+%define		rev	210370
 %define		modsrc	modules/linux
 %define		rel	1
 Summary:	VMWare guest utilities
@@ -15,8 +15,8 @@ Version:	%{snap}_%{rev}
 Release:	%{rel}
 License:	GPL
 Group:		Applications/System
-Source0:	http://dl.sourceforge.net/open-vm-tools/%{name}-%{snap}-%{rev}.tar.gz
-# Source0-md5:	90c79c24756f0b6cc3d42faed10f5c1b
+Source0:	http://downloads.sourceforge.net/open-vm-tools/%{name}-%{snap}-%{rev}.tar.gz
+# Source0-md5:	93d28b6e57b8d1ad0d322dd881e11903
 Source1:	%{name}-packaging
 Source2:	%{name}-modprobe.d
 Source3:	%{name}-init
@@ -55,6 +55,18 @@ VMWare guest utilities.
 
 %description -l pl.UTF-8
 Narzędzia dla systemu-gościa dla VMware.
+
+%package devel
+Summary:	Header files for open-vm-tools
+Summary(pl.UTF-8):	Pliki nagłówkowe open-vm-tools
+Group:		Development/Libraries
+Requires:	%{name} = %{version}-%{release}
+
+%description devel
+Header files for open-vm-tools.
+
+%description devel -l pl.UTF-8
+Pliki nagłówkowe open-vm-tools.
 
 %package gui
 Summary:	VMware guest utitities
@@ -232,7 +244,8 @@ VMware vsock Linux kernel module.
 Moduł jądra Linuksa VMware vsock.
 
 %prep
-%setup -q -n %{name}-%{snap}-%{rev}
+#%setup -q -n %{name}-%{snap}-%{rev}
+%setup -q -n %{name}-2009.11.17-%{rev}
 cp %{SOURCE1} packaging
 %{__sed} -i -e 's|##{BUILD_OUTPUT}##|build|' docs/api/doxygen.conf
 
@@ -347,17 +360,16 @@ fi
 %dir %{_libdir}/open-vm-tools
 %attr(755,root,root) %{_libdir}/lib*.so*
 %dir %{_libdir}/open-vm-tools/plugins
+%dir %{_libdir}/open-vm-tools/plugins/common
+%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/common/libhgfsServer.so
+%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/common/libvix.so
 %dir %{_libdir}/open-vm-tools/plugins/vmsvc
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libguestInfo.so
-%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libhgfsServer.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libpowerOps.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libtimeSync.so
-%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libvix.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libvmbackup.so
 %dir %{_libdir}/open-vm-tools/plugins/vmusr
-%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libhgfsServer.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libresolutionSet.so
-%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libvix.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libvixUser.so
 
 %attr(754,root,root) /etc/rc.d/init.d/%{name}
@@ -409,3 +421,9 @@ fi
 %defattr(644,root,root,755)
 /lib/modules/%{_kernel_ver}/misc/vsock.ko*
 %endif
+
+%files devel
+%defattr(644,root,root,755)
+%{_includedir}/vmGuestLib
+%{_pkgconfigdir}/vmguestlib.pc
+%{_libdir}/open-vm-tools/plugins/common/lib*.la
