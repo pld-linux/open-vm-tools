@@ -4,8 +4,8 @@
 %bcond_without	dist_kernel	# without distribution kernel
 %bcond_without	userspace	# without userspace package
 #
-%define		snap	2009.11.16
-%define		rev	210370
+%define		snap	2009.12.16
+%define		rev	217847
 %define		modsrc	modules/linux
 %define		rel	1
 Summary:	VMWare guest utilities
@@ -16,7 +16,7 @@ Release:	%{rel}
 License:	GPL
 Group:		Applications/System
 Source0:	http://downloads.sourceforge.net/open-vm-tools/%{name}-%{snap}-%{rev}.tar.gz
-# Source0-md5:	93d28b6e57b8d1ad0d322dd881e11903
+# Source0-md5:	8234aea94636a4902a785e981af37616
 Source1:	%{name}-packaging
 Source2:	%{name}-modprobe.d
 Source3:	%{name}-init
@@ -245,7 +245,7 @@ Moduł jądra Linuksa VMware vsock.
 
 %prep
 #%setup -q -n %{name}-%{snap}-%{rev}
-%setup -q -n %{name}-2009.11.17-%{rev}
+%setup -q -n %{name}-%{snap}-%{rev}
 cp %{SOURCE1} packaging
 %{__sed} -i -e 's|##{BUILD_OUTPUT}##|build|' docs/api/doxygen.conf
 
