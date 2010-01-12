@@ -24,17 +24,21 @@ Source4:	%{name}-vmware-user.desktop
 URL:		http://open-vm-tools.sourceforge.net/
 BuildRequires:	rpmbuild(macros) >= 1.453
 %if %{with userspace}
+BuildRequires:	doxygen
 BuildRequires:	glib2-devel >= 2.6.0
 BuildRequires:	gtk+2-devel
 BuildRequires:	gtkmm-devel >= 2.4.0
 BuildRequires:	libdnet-devel
 BuildRequires:	libfuse-devel
 BuildRequires:	libicu-devel
+BuildRequires:	libnotify-devel
 BuildRequires:	libpng-devel
 BuildRequires:	libstdc++-devel
 BuildRequires:	pam-devel
 BuildRequires:	pkgconfig
+BuildRequires:	procps-devel
 BuildRequires:	uriparser-devel
+BuildRequires:	xorg-lib-libSM-devel
 BuildRequires:	xorg-lib-libX11-devel
 BuildRequires:	xorg-lib-libXScrnSaver-devel
 BuildRequires:	xorg-lib-libXinerama-devel
