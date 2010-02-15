@@ -7,7 +7,7 @@
 %define		snap	2009.12.16
 %define		rev	217847
 %define		modsrc	modules/linux
-%define		rel	3
+%define		rel	4
 Summary:	VMWare guest utilities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware
 Name:		open-vm-tools
