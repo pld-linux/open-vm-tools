@@ -19,3 +19,17 @@ diff -ur open-vm-tools-2010.01.19-226760/lib/image/imageUtilPng.c open-vm-tools-
        png_destroy_write_struct(&png_ptr, &info_ptr);
        goto error;
     }
+--- open-vm-tools-2009.12.16-217847/configure.ac.old	2010-02-15 13:13:41.027109223 +0100
++++ open-vm-tools-2009.12.16-217847/configure.ac	2010-02-15 13:13:51.165024639 +0100
+@@ -498,9 +498,9 @@
+                             [AC_MSG_ERROR([uriparser library not found or is too old. Please configure without Unity (using --disable-unity) or install the liburiparser devel package.])])
+ 
+            # Check for libpng.
+-           AC_VMW_CHECK_LIB([png12],
++           AC_VMW_CHECK_LIB([png],
+                             [LIBPNG],
+-                            [libpng12],
++                            [libpng],
+                             [libpng-config],
+                             [],
+                             [png.h],
