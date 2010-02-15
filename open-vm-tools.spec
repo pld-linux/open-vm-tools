@@ -270,6 +270,7 @@ export OVT_SOURCE_DIR=$PWD
 %endif
 
 %if %{with userspace}
+%{__autoconf}
 %configure2_13 \
 	--without-kernel-modules
 %{__make}
