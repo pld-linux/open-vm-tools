@@ -25,6 +25,7 @@ Patch0:		%{name}-libpng.patch
 URL:		http://open-vm-tools.sourceforge.net/
 BuildRequires:	rpmbuild(macros) >= 1.453
 %if %{with userspace}
+BuildRequires:	autoconf
 BuildRequires:	doxygen
 BuildRequires:	glib2-devel >= 2.6.0
 BuildRequires:	gtk+2-devel
