@@ -7,7 +7,7 @@
 %define		snap	2009.12.16
 %define		rev	217847
 %define		modsrc	modules/linux
-%define		rel	4
+%define		rel	5
 Summary:	VMWare guest utilities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware
 Name:		open-vm-tools
@@ -21,7 +21,7 @@ Source1:	%{name}-packaging
 Source2:	%{name}-modprobe.d
 Source3:	%{name}-init
 Source4:	%{name}-vmware-user.desktop
-Patch0:     %{name}-libpng.patch
+Patch0:		%{name}-libpng.patch
 URL:		http://open-vm-tools.sourceforge.net/
 BuildRequires:	rpmbuild(macros) >= 1.453
 %if %{with userspace}
@@ -72,6 +72,18 @@ Header files for open-vm-tools.
 
 %description devel -l pl.UTF-8
 Pliki nagłówkowe open-vm-tools.
+
+%package static
+Summary:	Static open-vm-tools libraries
+Summary(pl.UTF-8):	Statyczne biblioteki open-vm-tools
+Group:		Development/Libraries
+Requires:	%{name}-devel = %{version}-%{release}
+
+%description static
+Static open-vm-tools libraries.
+
+%description static -l pl.UTF-8
+Statyczne biblioteki open-vm-tools.
 
 %package gui
 Summary:	VMware guest utitities
@@ -298,7 +310,7 @@ rm -rf $RPM_BUILD_ROOT
 
 rm $RPM_BUILD_ROOT/sbin/mount.vmhgfs
 ln -sf %{_sbindir}/mount.vmhgfs $RPM_BUILD_ROOT/sbin/mount.vmhgfs
-rm -f $RPM_BUILD_ROOT%{_libdir}/lib*.{a,la}
+rm -f $RPM_BUILD_ROOT%{_libdir}/open-vm-tools/plugins/common/*.la
 
 install -d $RPM_BUILD_ROOT/etc/{modprobe.d,rc.d/init.d,xdg/autostart}
 cp %{SOURCE2} $RPM_BUILD_ROOT/etc/modprobe.d/%{name}.conf
@@ -310,6 +322,7 @@ cp %{SOURCE4} $RPM_BUILD_ROOT/etc/xdg/autostart/vmware-user.desktop
 rm -rf $RPM_BUILD_ROOT
 
 %post
+/sbin/ldconfig
 /sbin/chkconfig --add open-vm-tools
 %service open-vm-tools restart "Open Virtual Machine"
 
@@ -318,6 +331,8 @@ if [ "$1" = "0" ]; then
 	%service open-vm-tools stop
 	/sbin/chkconfig --del open-vm-tools
 fi
+
+%postun	-p /sbin/ldconfig
 
 %post	-n kernel%{_alt_kernel}-misc-pvscsi
 %depmod %{_kernel_ver}
@@ -365,8 +380,11 @@ fi
 %attr(755,root,root) %{_bindir}/vmware-xferlogs
 %attr(755,root,root) %{_bindir}/vmware-vmblock-fuse
 %attr(755,root,root) %{_sbindir}/mount.vmhgfs
+%attr(755,root,root) %{_libdir}/libguestlib.so.*.*.*
+%attr(755,root,root) %ghost %{_libdir}/libguestlib.so.0
+%attr(755,root,root) %{_libdir}/libvmtools.so.*.*.*
+%attr(755,root,root) %ghost %{_libdir}/libvmtools.so.0
 %dir %{_libdir}/open-vm-tools
-%attr(755,root,root) %{_libdir}/lib*.so*
 %dir %{_libdir}/open-vm-tools/plugins
 %dir %{_libdir}/open-vm-tools/plugins/common
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/common/libhgfsServer.so
@@ -382,6 +400,20 @@ fi
 
 %attr(754,root,root) /etc/rc.d/init.d/%{name}
 /etc/modprobe.d/%{name}.conf
+
+%files devel
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libguestlib.so
+%attr(755,root,root) %{_libdir}/libvmtools.so
+%{_libdir}/libguestlib.la
+%{_libdir}/libvmtools.la
+%{_includedir}/vmGuestLib
+%{_pkgconfigdir}/vmguestlib.pc
+
+%files static
+%defattr(644,root,root,755)
+%{_libdir}/libguestlib.a
+%{_libdir}/libvmtools.a
 
 %files gui
 %defattr(644,root,root,755)
@@ -429,9 +461,3 @@ fi
 %defattr(644,root,root,755)
 /lib/modules/%{_kernel_ver}/misc/vsock.ko*
 %endif
-
-%files devel
-%defattr(644,root,root,755)
-%{_includedir}/vmGuestLib
-%{_pkgconfigdir}/vmguestlib.pc
-%{_libdir}/open-vm-tools/plugins/common/lib*.la
