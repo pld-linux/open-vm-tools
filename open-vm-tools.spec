@@ -4,10 +4,10 @@
 %bcond_without	dist_kernel	# without distribution kernel
 %bcond_without	userspace	# without userspace package
 #
-%define		snap	2009.12.16
-%define		rev	217847
+%define		snap	2010.02.23
+%define		rev	236320
 %define		modsrc	modules/linux
-%define		rel	5
+%define		rel	1
 Summary:	VMWare guest utilities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware
 Name:		open-vm-tools
@@ -16,7 +16,7 @@ Release:	%{rel}
 License:	GPL
 Group:		Applications/System
 Source0:	http://downloads.sourceforge.net/open-vm-tools/%{name}-%{snap}-%{rev}.tar.gz
-# Source0-md5:	8234aea94636a4902a785e981af37616
+# Source0-md5:	25ddc284fc6eb478384cca57a477c5b6
 Source1:	%{name}-packaging
 Source2:	%{name}-modprobe.d
 Source3:	%{name}-init
@@ -225,24 +225,6 @@ VMware vmxnet Linux kernel module.
 %description -n kernel%{_alt_kernel}-misc-vmxnet -l pl.UTF-8
 Moduł jądra Linuksa VMware vmxnet.
 
-%package -n kernel%{_alt_kernel}-misc-vmxnet3
-Summary:	VMware vmxnet3 Linux kernel module
-Summary(pl.UTF-8):	Moduł jądra Linuksa VMware vmxnet3
-Release:	%{rel}@%{_kernel_ver_str}
-Group:		Base/Kernel
-Requires(post,postun):	/sbin/depmod
-Requires:	dev >= 2.9.0-7
-%if %{with dist_kernel}
-%requires_releq_kernel
-Requires(postun):	%releq_kernel
-%endif
-
-%description -n kernel%{_alt_kernel}-misc-vmxnet3
-VMware vmxnet3 Linux kernel module.
-
-%description -n kernel%{_alt_kernel}-misc-vmxnet3 -l pl.UTF-8
-Moduł jądra Linuksa VMware vmxnet3.
-
 %package -n kernel%{_alt_kernel}-misc-vsock
 Summary:	VMware vsock Linux kernel module
 Summary(pl.UTF-8):	Moduł jądra Linuksa VMware vsock
@@ -278,7 +260,6 @@ export OVT_SOURCE_DIR=$PWD
 %build_kernel_modules -C %{modsrc}/vmmemctl	-m vmmemctl	SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}
 %build_kernel_modules -C %{modsrc}/vmsync	-m vmsync	SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}
 %build_kernel_modules -C %{modsrc}/vmxnet	-m vmxnet	SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}
-%build_kernel_modules -C %{modsrc}/vmxnet3	-m vmxnet3	SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}
 %build_kernel_modules -C %{modsrc}/vsock	-m vsock	SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}
 %endif
 
@@ -301,7 +282,6 @@ rm -rf $RPM_BUILD_ROOT
 %install_kernel_modules -m %{modsrc}/vmmemctl/vmmemctl	-d misc
 %install_kernel_modules -m %{modsrc}/vmsync/vmsync	-d misc
 %install_kernel_modules -m %{modsrc}/vmxnet/vmxnet	-d misc
-%install_kernel_modules -m %{modsrc}/vmxnet3/vmxnet3	-d misc
 %install_kernel_modules -m %{modsrc}/vsock/vsock	-d misc
 %endif
 
@@ -354,9 +334,6 @@ fi
 %depmod %{_kernel_ver}
 
 %post	-n kernel%{_alt_kernel}-misc-vmxnet
-%depmod %{_kernel_ver}
-
-%post	-n kernel%{_alt_kernel}-misc-vmxnet3
 %depmod %{_kernel_ver}
 
 %post	-n kernel%{_alt_kernel}-misc-vsock
@@ -453,10 +430,6 @@ fi
 %files -n kernel%{_alt_kernel}-misc-vmxnet
 %defattr(644,root,root,755)
 /lib/modules/%{_kernel_ver}/misc/vmxnet.ko*
-
-%files -n kernel%{_alt_kernel}-misc-vmxnet3
-%defattr(644,root,root,755)
-/lib/modules/%{_kernel_ver}/misc/vmxnet3.ko*
 
 %files -n kernel%{_alt_kernel}-misc-vsock
 %defattr(644,root,root,755)
