@@ -4,19 +4,20 @@
 %bcond_without	dist_kernel	# without distribution kernel
 %bcond_without	userspace	# without userspace package
 #
-%define		snap	2010.02.23
-%define		rev	236320
+#%define		snap	2010.02.23
+%define     ver 8.4.2
+%define		rev	261024
+%define     rel 1
 %define		modsrc	modules/linux
-%define		rel	8
 Summary:	VMWare guest utilities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware
 Name:		open-vm-tools
-Version:	%{snap}_%{rev}
+Version:	%{ver}.%{rev}
 Release:	%{rel}
 License:	GPL
 Group:		Applications/System
-Source0:	http://downloads.sourceforge.net/open-vm-tools/%{name}-%{snap}-%{rev}.tar.gz
-# Source0-md5:	25ddc284fc6eb478384cca57a477c5b6
+Source0:	http://downloads.sourceforge.net/project/open-vm-tools/open-vm-tools/stable-8.4.x/%{name}-%{ver}-%{rev}.tar.gz
+# Source0-md5:	4d9ddc865b42fc6982c3078031500486
 Source1:	%{name}-packaging
 Source2:	%{name}-modprobe.d
 Source3:	%{name}-init
@@ -245,7 +246,7 @@ Moduł jądra Linuksa VMware vsock.
 
 %prep
 #%setup -q -n %{name}-%{snap}-%{rev}
-%setup -q -n %{name}-%{snap}-%{rev}
+%setup -q -n %{name}-%{ver}-%{rev}
 %patch0 -p1
 cp %{SOURCE1} packaging
 %{__sed} -i -e 's|##{BUILD_OUTPUT}##|build|' docs/api/doxygen.conf
@@ -343,7 +344,12 @@ fi
 %files
 %defattr(644,root,root,755)
 %doc AUTHORS ChangeLog NEWS README packaging
+%ifarch %{x8664}
+%config(noreplace) %verify(not md5 mtime size) /etc/pam.d/vmtoolsd-x64
+%endif
+%ifarch %{ix86}
 %config(noreplace) %verify(not md5 mtime size) /etc/pam.d/vmtoolsd
+%endif
 %dir /etc/vmware-tools
 %attr(755,root,root) /etc/vmware-tools/*vm-*
 #%config(noreplace) %verify(not md5 mtime size) /etc/vmware-tools/tools.conf
@@ -364,14 +370,16 @@ fi
 %attr(755,root,root) %ghost %{_libdir}/libvmtools.so.0
 %dir %{_libdir}/open-vm-tools
 %dir %{_libdir}/open-vm-tools/plugins
-%dir %{_libdir}/open-vm-tools/plugins/common
-%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/common/libhgfsServer.so
-%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/common/libvix.so
 %dir %{_libdir}/open-vm-tools/plugins/vmsvc
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libguestInfo.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libpowerOps.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libtimeSync.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libvmbackup.so
+%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libhgfsServer.so
+%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libvix.so
+%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libhgfsServer.so
+%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libvix.so
+
 %dir %{_libdir}/open-vm-tools/plugins/vmusr
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libresolutionSet.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libvixUser.so
@@ -385,8 +393,6 @@ fi
 %attr(755,root,root) %{_libdir}/libvmtools.so
 %{_libdir}/libguestlib.la
 %{_libdir}/libvmtools.la
-%{_includedir}/vmGuestLib
-%{_pkgconfigdir}/vmguestlib.pc
 
 %files static
 %defattr(644,root,root,755)
