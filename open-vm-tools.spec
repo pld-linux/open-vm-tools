@@ -4,16 +4,16 @@
 %bcond_without	dist_kernel	# without distribution kernel
 %bcond_without	userspace	# without userspace package
 #
-#%define		snap	2010.02.23
 %define     ver 8.4.2
-%define		rev	261024
-%define     rel 1
-%define		modsrc	modules/linux
-Summary:	VMWare guest utilities
+%define     rev	261024
+%define     rel 2
+%define     modsrc	modules/linux
+Summary:    VMWare guest utilities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware
 Name:		open-vm-tools
 Version:	%{ver}.%{rev}
 Release:	%{rel}
+Epoch:      1
 License:	GPL
 Group:		Applications/System
 Source0:	http://downloads.sourceforge.net/project/open-vm-tools/open-vm-tools/stable-8.4.x/%{name}-%{ver}-%{rev}.tar.gz
@@ -245,7 +245,6 @@ VMware vsock Linux kernel module.
 Moduł jądra Linuksa VMware vsock.
 
 %prep
-#%setup -q -n %{name}-%{snap}-%{rev}
 %setup -q -n %{name}-%{ver}-%{rev}
 %patch0 -p1
 cp %{SOURCE1} packaging
@@ -352,7 +351,6 @@ fi
 %endif
 %dir /etc/vmware-tools
 %attr(755,root,root) /etc/vmware-tools/*vm-*
-#%config(noreplace) %verify(not md5 mtime size) /etc/vmware-tools/tools.conf
 %dir /etc/vmware-tools/plugins
 %attr(755,root,root) /sbin/mount.vmhgfs
 %attr(755,root,root) %{_bindir}/vmtoolsd
