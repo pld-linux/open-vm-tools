@@ -6,7 +6,7 @@
 #
 %define     ver 8.4.2
 %define     rev	261024
-%define     rel 6
+%define     rel 7
 %define     modsrc	modules/linux
 Summary:    VMWare guest utilities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware
