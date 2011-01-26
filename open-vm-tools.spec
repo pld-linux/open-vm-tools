@@ -297,7 +297,7 @@ fi
 %if %{with userspace}
 %files
 %defattr(644,root,root,755)
-%doc AUTHORS ChangeLog NEWS README packaging open-vm-tools/api
+%doc AUTHORS ChangeLog NEWS README packaging
 %config(noreplace) %verify(not md5 mtime size) /etc/pam.d/vmtoolsd
 %endif
 %dir /etc/vmware-tools
