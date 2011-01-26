@@ -4,25 +4,27 @@
 %bcond_without	dist_kernel	# without distribution kernel
 %bcond_without	userspace	# without userspace package
 #
-%define     ver 8.4.2
-%define     rev	261024
-%define     rel 8
+%define		snap    2010.12.19
+%define		ver     8.4.2
+%define		rev     339835
+%define		rel     1
 %define     modsrc	modules/linux
-Summary:    VMWare guest utilities
+Summary:	VMWare guest utilities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware
 Name:		open-vm-tools
-Version:	%{ver}.%{rev}
+Version:	%{snap}.%{rev}
+#Version:	%{ver}.%{rev}
 Release:	%{rel}
-Epoch:      1
+#Epoch:		1
 License:	GPL
 Group:		Applications/System
-Source0:	http://downloads.sourceforge.net/project/open-vm-tools/open-vm-tools/stable-8.4.x/%{name}-%{ver}-%{rev}.tar.gz
-# Source0-md5:	4d9ddc865b42fc6982c3078031500486
+#Source0:	http://downloads.sourceforge.net/project/open-vm-tools/open-vm-tools/stable-8.4.x/%{name}-%{ver}-%{rev}.tar.gz
+Source0:	http://downloads.sourceforge.net/open-vm-tools/open-vm-tools/%{snap}/%{name}-%{snap}-%{rev}.tar.gz
+# Source0-md5:	4daeb6b5ef8e0f8a00efa621986ea24c
 Source1:	%{name}-packaging
 Source2:	%{name}-modprobe.d
 Source3:	%{name}-init
 Source4:	%{name}-vmware-user.desktop
-Patch0:		%{name}-libpng.patch
 URL:		http://open-vm-tools.sourceforge.net/
 BuildRequires:	rpmbuild(macros) >= 1.453
 %if %{with userspace}
@@ -100,24 +102,6 @@ VMWare guest utilities. This package contains GUI part of tools.
 Narzędzia dla systemu-gościa dla VMware. Ten pakiet zawiera graficzną
 część narzędzi.
 
-%package -n kernel%{_alt_kernel}-misc-pvscsi
-Summary:	VMware pvscsi Linux kernel module
-Summary(pl.UTF-8):	Moduł jądra Linuksa VMware pvscsi
-Release:	%{rel}@%{_kernel_ver_str}
-Group:		Base/Kernel
-Requires(post,postun):	/sbin/depmod
-Requires:	dev >= 2.9.0-7
-%if %{with dist_kernel}
-%requires_releq_kernel
-Requires(postun):	%releq_kernel
-%endif
-
-%description -n kernel%{_alt_kernel}-misc-pvscsi
-VMware pvscsi Linux kernel module.
-
-%description -n kernel%{_alt_kernel}-misc-pvscsi -l pl.UTF-8
-Moduł jądra Linuksa VMware pvscsi.
-
 %package -n kernel%{_alt_kernel}-misc-vmblock
 Summary:	VMware vmblock Linux kernel module
 Summary(pl.UTF-8):	Moduł jądra Linuksa VMware vmblock
@@ -171,24 +155,6 @@ VMware vmhgfs Linux kernel module.
 
 %description -n kernel%{_alt_kernel}-misc-vmhgfs -l pl.UTF-8
 Moduł jądra Linuksa VMware vmhgfs.
-
-%package -n kernel%{_alt_kernel}-misc-vmmemctl
-Summary:	VMware vmmemctl Linux kernel module
-Summary(pl.UTF-8):	Moduł jądra Linuksa VMware vmmemctl
-Release:	%{rel}@%{_kernel_ver_str}
-Group:		Base/Kernel
-Requires(post,postun):	/sbin/depmod
-Requires:	dev >= 2.9.0-7
-%if %{with dist_kernel}
-%requires_releq_kernel
-Requires(postun):	%releq_kernel
-%endif
-
-%description -n kernel%{_alt_kernel}-misc-vmmemctl
-VMware vmmemctl Linux kernel module.
-
-%description -n kernel%{_alt_kernel}-misc-vmmemctl -l pl.UTF-8
-Moduł jądra Linuksa VMware vmmemctl.
 
 %package -n kernel%{_alt_kernel}-misc-vmsync
 Summary:	VMware vmsync Linux kernel module
@@ -245,19 +211,16 @@ VMware vsock Linux kernel module.
 Moduł jądra Linuksa VMware vsock.
 
 %prep
-%setup -q -n %{name}-%{ver}-%{rev}
-%patch0 -p1
+%setup -q -n %{name}-%{snap}-%{rev}
 cp %{SOURCE1} packaging
 %{__sed} -i -e 's|##{BUILD_OUTPUT}##|build|' docs/api/doxygen.conf
 
 %build
 %if %{with kernel}
 export OVT_SOURCE_DIR=$PWD
-%build_kernel_modules -C %{modsrc}/pvscsi	-m pvscsi	SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}
 %build_kernel_modules -C %{modsrc}/vmblock	-m vmblock	SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}
 %build_kernel_modules -C %{modsrc}/vmci		-m vmci		SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}
 %build_kernel_modules -C %{modsrc}/vmhgfs	-m vmhgfs	SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}
-%build_kernel_modules -C %{modsrc}/vmmemctl	-m vmmemctl	SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}
 %build_kernel_modules -C %{modsrc}/vmsync	-m vmsync	SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}
 %build_kernel_modules -C %{modsrc}/vmxnet	-m vmxnet	SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}
 %build_kernel_modules -C %{modsrc}/vsock	-m vsock	SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}
@@ -275,11 +238,9 @@ rm -rf autom4te.cache
 rm -rf $RPM_BUILD_ROOT
 
 %if %{with kernel}
-%install_kernel_modules -m %{modsrc}/pvscsi/pvscsi	-d misc
 %install_kernel_modules -m %{modsrc}/vmblock/vmblock	-d misc
 %install_kernel_modules -m %{modsrc}/vmci/vmci		-d misc
 %install_kernel_modules -m %{modsrc}/vmhgfs/vmhgfs	-d misc
-%install_kernel_modules -m %{modsrc}/vmmemctl/vmmemctl	-d misc
 %install_kernel_modules -m %{modsrc}/vmsync/vmsync	-d misc
 %install_kernel_modules -m %{modsrc}/vmxnet/vmxnet	-d misc
 %install_kernel_modules -m %{modsrc}/vsock/vsock	-d misc
@@ -315,9 +276,6 @@ fi
 
 %postun	-p /sbin/ldconfig
 
-%post	-n kernel%{_alt_kernel}-misc-pvscsi
-%depmod %{_kernel_ver}
-
 %post	-n kernel%{_alt_kernel}-misc-vmblock
 %depmod %{_kernel_ver}
 
@@ -325,9 +283,6 @@ fi
 %depmod %{_kernel_ver}
 
 %post	-n kernel%{_alt_kernel}-misc-vmhgfs
-%depmod %{_kernel_ver}
-
-%post	-n kernel%{_alt_kernel}-misc-vmmemctl
 %depmod %{_kernel_ver}
 
 %post	-n kernel%{_alt_kernel}-misc-vmsync
@@ -342,16 +297,16 @@ fi
 %if %{with userspace}
 %files
 %defattr(644,root,root,755)
-%doc AUTHORS ChangeLog NEWS README packaging
-%ifarch %{x8664}
-%config(noreplace) %verify(not md5 mtime size) /etc/pam.d/vmtoolsd-x64
-%endif
-%ifarch %{ix86}
+%doc AUTHORS ChangeLog NEWS README packaging open-vm-tools/api
 %config(noreplace) %verify(not md5 mtime size) /etc/pam.d/vmtoolsd
 %endif
 %dir /etc/vmware-tools
 %attr(755,root,root) /etc/vmware-tools/*vm-*
+%attr(755,root,root) /etc/vmware-tools/statechange.subr
 %dir /etc/vmware-tools/plugins
+%dir /etc/vmware-tools/scripts
+%dir /etc/vmware-tools/scripts/vmware
+%attr(755,root,root) /etc/vmware-tools/scripts/vmware/network
 %attr(755,root,root) /sbin/mount.vmhgfs
 %attr(755,root,root) %{_bindir}/vmtoolsd
 %attr(755,root,root) %{_bindir}/vmware-checkvm
@@ -366,6 +321,8 @@ fi
 %attr(755,root,root) %ghost %{_libdir}/libguestlib.so.0
 %attr(755,root,root) %{_libdir}/libvmtools.so.*.*.*
 %attr(755,root,root) %ghost %{_libdir}/libvmtools.so.0
+%attr(755,root,root) %{_libdir}/libhgfs.so.0
+%attr(755,root,root) %ghost %{_libdir}/libhgfs.so.*.*.*
 %dir %{_libdir}/open-vm-tools
 %dir %{_libdir}/open-vm-tools/plugins
 %dir %{_libdir}/open-vm-tools/plugins/vmsvc
@@ -373,10 +330,12 @@ fi
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libpowerOps.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libtimeSync.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libvmbackup.so
-%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libhgfsServer.so
-%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libvix.so
-%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libhgfsServer.so
-%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libvix.so
+%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/common/libhgfsServer.so
+%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/common/libvix.so
+%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libdesktopEvents.so
+%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libdndcp.so
+%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libunity.so
+
 
 %dir %{_libdir}/open-vm-tools/plugins/vmusr
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libresolutionSet.so
@@ -389,28 +348,29 @@ fi
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libguestlib.so
 %attr(755,root,root) %{_libdir}/libvmtools.so
+%attr(755,root,root) %{_libdir}/libhgfs.so
+%dir %{_includedir}/vmGuestLib
+%{_includedir}/vmGuestLib/includeCheck.h
+%{_includedir}/vmGuestLib/vmGuestLib.h
+%{_includedir}/vmGuestLib/vmSessionId.h
+%{_includedir}/vmGuestLib/vm_basic_types.h
 %{_libdir}/libguestlib.la
 %{_libdir}/libvmtools.la
+%{_libdir}/libhgfs.la
+%{_pkgconfigdir}/vmguestlib.pc
 
 %files static
 %defattr(644,root,root,755)
 %{_libdir}/libguestlib.a
 %{_libdir}/libvmtools.a
+%{_libdir}/libhgfs.a
 
 %files gui
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/vmware-toolbox
-%attr(755,root,root) %{_bindir}/vmware-user
-%{_desktopdir}/vmware-user.desktop
 %{_sysconfdir}/xdg/autostart/vmware-user.desktop
 
-%endif
-
 %if %{with kernel}
-%files -n kernel%{_alt_kernel}-misc-pvscsi
-%defattr(644,root,root,755)
-/lib/modules/%{_kernel_ver}/misc/pvscsi.ko*
-
 %files -n kernel%{_alt_kernel}-misc-vmblock
 %defattr(644,root,root,755)
 /lib/modules/%{_kernel_ver}/misc/vmblock.ko*
@@ -422,10 +382,6 @@ fi
 %files -n kernel%{_alt_kernel}-misc-vmhgfs
 %defattr(644,root,root,755)
 /lib/modules/%{_kernel_ver}/misc/vmhgfs.ko*
-
-%files -n kernel%{_alt_kernel}-misc-vmmemctl
-%defattr(644,root,root,755)
-/lib/modules/%{_kernel_ver}/misc/vmmemctl.ko*
 
 %files -n kernel%{_alt_kernel}-misc-vmsync
 %defattr(644,root,root,755)
