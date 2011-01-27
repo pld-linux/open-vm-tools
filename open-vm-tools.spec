@@ -15,6 +15,11 @@ Name:		open-vm-tools
 Version:	%{snap}.%{rev}
 #Version:	%{ver}.%{rev}
 Release:	%{rel}
+#Epoch:		1
+
+exit 1
+PASZCZAK NAPRAW TE BZDURY!!!
+
 License:	GPL
 Group:		Applications/System
 #Source0:	http://downloads.sourceforge.net/project/open-vm-tools/open-vm-tools/stable-8.4.x/%{name}-%{ver}-%{rev}.tar.gz
