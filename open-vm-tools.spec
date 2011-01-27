@@ -3,11 +3,11 @@
 %bcond_without	kernel		# without kernel modules
 %bcond_without	dist_kernel	# without distribution kernel
 %bcond_without	userspace	# without userspace package
-#
+
 %define		snap    2010.12.19
 %define		ver     8.4.2
 %define		rev     339835
-%define		rel     1
+%define		rel     0.1
 %define     modsrc	modules/linux
 Summary:	VMWare guest utilities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware
@@ -15,13 +15,6 @@ Name:		open-vm-tools
 Version:	%{snap}.%{rev}
 #Version:	%{ver}.%{rev}
 Release:	%{rel}
-#Epoch:		1
-
-exit 1
-
-PASZCZAK NAPRAW TE BZDURY!!!!!!!!
-
-
 License:	GPL
 Group:		Applications/System
 #Source0:	http://downloads.sourceforge.net/project/open-vm-tools/open-vm-tools/stable-8.4.x/%{name}-%{ver}-%{rev}.tar.gz
@@ -99,7 +92,7 @@ Statyczne biblioteki open-vm-tools.
 Summary:	VMware guest utitities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware.
 Group:		Applications/System
-Requires:	%{name} = %{epoch}:%{version}-%{release}
+Requires:	%{name} = %{version}-%{release}
 
 %description gui
 VMWare guest utilities. This package contains GUI part of tools.
@@ -341,7 +334,6 @@ fi
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libdesktopEvents.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libdndcp.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libunity.so
-
 
 %dir %{_libdir}/open-vm-tools/plugins/vmusr
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libresolutionSet.so
