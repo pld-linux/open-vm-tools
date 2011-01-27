@@ -14,6 +14,17 @@ Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware
 Name:		open-vm-tools
 Version:	%{snap}.%{rev}
 #Version:	%{ver}.%{rev}
+
+exit 1
+
+TODO
+- przywrocic epoch
+- naprawic Version
+- ten syf na pewno nie zbuduje sie na 2.6.16, wiec podbic BR
+
+na koniec pragne dodac ze gloczke to fajfus
+
+
 Release:	%{rel}
 License:	GPL
 Group:		Applications/System
