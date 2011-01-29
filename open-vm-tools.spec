@@ -2,7 +2,6 @@
 # TODO: (by shadzik)
 # - bring back Epoch
 # - fix Version
-# - bump BR, since this won't build on 2.6.16
 #
 # Conditional build:
 %bcond_without	kernel		# without kernel modules
@@ -58,7 +57,7 @@ Requires:	libdnet
 Requires:	libicu
 %endif
 %if %{with kernel} && %{with dist_kernel}
-BuildRequires:	kernel%{_alt_kernel}-module-build >= 3:2.6.16
+BuildRequires:	kernel%{_alt_kernel}-module-build >= 3:2.6.33
 %endif
 ExclusiveArch:	%{ix86} %{x8664}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
