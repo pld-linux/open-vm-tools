@@ -1,8 +1,4 @@
 #
-# TODO: (by shadzik)
-# - bring back Epoch
-# - fix Version
-#
 # Conditional build:
 %bcond_without	kernel		# without kernel modules
 %bcond_without	dist_kernel	# without distribution kernel
@@ -17,8 +13,8 @@ Summary:	VMWare guest utilities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware
 Name:		open-vm-tools
 Version:	%{snap}.%{rev}
-#Version:	%{ver}.%{rev}
 Release:	%{rel}
+Epoch:		1
 License:	GPL
 Group:		Applications/System
 #Source0:	http://downloads.sourceforge.net/project/open-vm-tools/open-vm-tools/stable-8.4.x/%{name}-%{ver}-%{rev}.tar.gz
