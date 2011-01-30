@@ -329,13 +329,13 @@ fi
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libpowerOps.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libtimeSync.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libvmbackup.so
+%dir %{_libdir}/open-vm-tools/plugins/common
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/common/libhgfsServer.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/common/libvix.so
+%dir %{_libdir}/open-vm-tools/plugins/vmusr
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libdesktopEvents.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libdndcp.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libunity.so
-
-%dir %{_libdir}/open-vm-tools/plugins/vmusr
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libresolutionSet.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libvixUser.so
 
