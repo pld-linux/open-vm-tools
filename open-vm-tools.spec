@@ -5,15 +5,16 @@
 %bcond_without	userspace	# without userspace package
 
 %define		snap    2010.12.19
+%define		fsnap	%(echo %{snap} | tr -d .)
 %define		ver     8.4.2
 %define		rev     339835
-%define		rel     0.1
+%define		rel    	1
 %define     modsrc	modules/linux
 Summary:	VMWare guest utilities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware
 Name:		open-vm-tools
-Version:	%{snap}.%{rev}
-Release:	%{rel}
+Version:	%{ver}
+Release:	0.%{fsnap}.%{rel}
 Epoch:		1
 License:	GPL
 Group:		Applications/System
