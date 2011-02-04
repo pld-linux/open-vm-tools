@@ -69,7 +69,7 @@ Narzędzia dla systemu-gościa dla VMware.
 Summary:	Header files for open-vm-tools
 Summary(pl.UTF-8):	Pliki nagłówkowe open-vm-tools
 Group:		Development/Libraries
-Requires:	%{name} = %{version}-%{release}
+Requires:	%{name} = %{epoch}:%{version}-%{release}
 
 %description devel
 Header files for open-vm-tools.
@@ -81,7 +81,7 @@ Pliki nagłówkowe open-vm-tools.
 Summary:	Static open-vm-tools libraries
 Summary(pl.UTF-8):	Statyczne biblioteki open-vm-tools
 Group:		Development/Libraries
-Requires:	%{name}-devel = %{version}-%{release}
+Requires:	%{name}-devel = %{epoch}:%{version}-%{release}
 
 %description static
 Static open-vm-tools libraries.
@@ -93,7 +93,7 @@ Statyczne biblioteki open-vm-tools.
 Summary:	VMware guest utitities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware.
 Group:		Applications/System
-Requires:	%{name} = %{version}-%{release}
+Requires:	%{name} = %{epoch}:%{version}-%{release}
 
 %description gui
 VMWare guest utilities. This package contains GUI part of tools.
