@@ -165,7 +165,7 @@ start() {
 		start_vmblock
 		start_vmhgfs
 	fi
-	_modprobe single vmmemctl
+	_modprobe single vmware_vmmemctl
 	_modprobe single vmci
 	_modprobe single vsock
 	start_vmsync
