@@ -168,6 +168,7 @@ start() {
 	_modprobe single vmware_vmmemctl
 	_modprobe single vmci
 	_modprobe single vsock
+	_modprobe single vmw_pvscsi
 	start_vmsync
 }
 
