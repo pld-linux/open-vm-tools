@@ -8,7 +8,7 @@
 %define		fsnap	%(echo %{snap} | tr -d .)
 %define		ver     8.4.2
 %define		rev     339835
-%define		rel    	3
+%define		rel    	4
 %define     modsrc	modules/linux
 Summary:	VMWare guest utilities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware
@@ -52,6 +52,8 @@ BuildRequires:	xorg-lib-libXtst-devel
 Requires:	ethtool
 Requires:	libdnet
 Requires:	libicu
+Obsoletes:	kernel-misc-pvscsi
+Obsoletes:	kernel-misc-vmmemctl
 %endif
 %if %{with kernel} && %{with dist_kernel}
 BuildRequires:	kernel%{_alt_kernel}-module-build >= 3:2.6.33
