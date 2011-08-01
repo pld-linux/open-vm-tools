@@ -233,7 +233,8 @@ rm -rf autom4te.cache
 %{__autoconf}
 %configure2_13 \
 	--without-kernel-modules
-%{__make}
+%{__make} \
+	CFLAGS="%{rpmcflags} -Wno-unused-but-set-variable"
 %endif
 
 %install
