@@ -4,11 +4,11 @@
 %bcond_without	dist_kernel	# without distribution kernel
 %bcond_without	userspace	# without userspace package
 
-%define		snap    2011.07.19
+%define		snap    2011.08.21
 %define		fsnap	%(echo %{snap} | tr -d .)
 %define		ver     8.4.2
-%define		rev     450511
-%define		rel    	3
+%define		rev     471295
+%define		rel    	1
 %define     modsrc	modules/linux
 Summary:	VMWare guest utilities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware
@@ -20,7 +20,7 @@ License:	GPL
 Group:		Applications/System
 #Source0:	http://downloads.sourceforge.net/project/open-vm-tools/open-vm-tools/stable-8.4.x/%{name}-%{ver}-%{rev}.tar.gz
 Source0:	http://downloads.sourceforge.net/open-vm-tools/open-vm-tools/%{snap}/%{name}-%{snap}-%{rev}.tar.gz
-# Source0-md5:	efe9b078045e9f7ea1e1311bf11857e6
+# Source0-md5:	fd32f03ab6068c265597a74b916ca81e
 Source1:	%{name}-packaging
 Source2:	%{name}-modprobe.d
 Source3:	%{name}-init
