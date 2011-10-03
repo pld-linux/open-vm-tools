@@ -8,7 +8,7 @@
 %define		fsnap	%(echo %{snap} | tr -d .)
 %define		ver     8.4.2
 %define		rev     471295
-%define		rel    	1
+%define		rel    	2
 %define     modsrc	modules/linux
 Summary:	VMWare guest utilities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware
@@ -324,8 +324,8 @@ fi
 %attr(755,root,root) %ghost %{_libdir}/libguestlib.so.0
 %attr(755,root,root) %{_libdir}/libvmtools.so.*.*.*
 %attr(755,root,root) %ghost %{_libdir}/libvmtools.so.0
-%attr(755,root,root) %{_libdir}/libhgfs.so.0
-%attr(755,root,root) %ghost %{_libdir}/libhgfs.so.*.*.*
+%attr(755,root,root) %{_libdir}/libhgfs.so.*.*.*
+%attr(755,root,root) %ghost %{_libdir}/libhgfs.so.0
 %dir %{_libdir}/open-vm-tools
 %dir %{_libdir}/open-vm-tools/plugins
 %dir %{_libdir}/open-vm-tools/plugins/vmsvc
