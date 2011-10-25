@@ -8,7 +8,7 @@
 %define		fsnap	%(echo %{snap} | tr -d .)
 %define		ver     8.4.2
 %define		rev     471295
-%define		rel    	7
+%define		rel    	8
 %define     modsrc	modules/linux
 Summary:	VMWare guest utilities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware
