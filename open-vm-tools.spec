@@ -4,11 +4,11 @@
 %bcond_without	dist_kernel	# without distribution kernel
 %bcond_without	userspace	# without userspace package
 
-%define		snap    2011.08.21
+%define		snap    2011.09.23
 %define		fsnap	%(echo %{snap} | tr -d .)
 %define		ver     8.4.2
-%define		rev     471295
-%define		rel    	8
+%define		rev     491607
+%define		rel    	1
 %define     modsrc	modules/linux
 Summary:	VMWare guest utilities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware
@@ -20,7 +20,7 @@ License:	GPL
 Group:		Applications/System
 #Source0:	http://downloads.sourceforge.net/project/open-vm-tools/open-vm-tools/stable-8.4.x/%{name}-%{ver}-%{rev}.tar.gz
 Source0:	http://downloads.sourceforge.net/open-vm-tools/open-vm-tools/%{snap}/%{name}-%{snap}-%{rev}.tar.gz
-# Source0-md5:	fd32f03ab6068c265597a74b916ca81e
+# Source0-md5:	599342eee8d531b35ca1cc948b61868f
 Source1:	%{name}-packaging
 Source2:	%{name}-modprobe.d
 Source3:	%{name}-init
@@ -306,7 +306,6 @@ fi
 %dir /etc/vmware-tools
 %attr(755,root,root) /etc/vmware-tools/*vm-*
 %attr(755,root,root) /etc/vmware-tools/statechange.subr
-%dir /etc/vmware-tools/plugins
 %dir /etc/vmware-tools/scripts
 %dir /etc/vmware-tools/scripts/vmware
 %attr(755,root,root) /etc/vmware-tools/scripts/vmware/network
@@ -339,7 +338,6 @@ fi
 %dir %{_libdir}/open-vm-tools/plugins/vmusr
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libdesktopEvents.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libdndcp.so
-%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libunity.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libresolutionSet.so
 
 %attr(754,root,root) /etc/rc.d/init.d/%{name}
