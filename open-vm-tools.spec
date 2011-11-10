@@ -107,7 +107,7 @@ część narzędzi.
 %package -n kernel%{_alt_kernel}-misc-vmblock
 Summary:	VMware vmblock Linux kernel module
 Summary(pl.UTF-8):	Moduł jądra Linuksa VMware vmblock
-Release:	%{rel}@%{_kernel_ver_str}
+Release:	%{release}@%{_kernel_ver_str}
 Group:		Base/Kernel
 Requires(post,postun):	/sbin/depmod
 Requires:	dev >= 2.9.0-7
@@ -125,7 +125,7 @@ Moduł jądra Linuksa VMware vmblock.
 %package -n kernel%{_alt_kernel}-misc-vmci
 Summary:	VMware vmci Linux kernel module
 Summary(pl.UTF-8):	Moduł jądra Linuksa VMware vmci
-Release:	%{rel}@%{_kernel_ver_str}
+Release:	%{release}@%{_kernel_ver_str}
 Group:		Base/Kernel
 Requires(post,postun):	/sbin/depmod
 Requires:	dev >= 2.9.0-7
@@ -143,7 +143,7 @@ Moduł jądra Linuksa VMware vmci.
 %package -n kernel%{_alt_kernel}-misc-vmhgfs
 Summary:	VMware vmhgfs Linux kernel module
 Summary(pl.UTF-8):	Moduł jądra Linuksa VMware vmhgfs
-Release:	%{rel}@%{_kernel_ver_str}
+Release:	%{release}@%{_kernel_ver_str}
 Group:		Base/Kernel
 Requires(post,postun):	/sbin/depmod
 Requires:	dev >= 2.9.0-7
@@ -161,7 +161,7 @@ Moduł jądra Linuksa VMware vmhgfs.
 %package -n kernel%{_alt_kernel}-misc-vmsync
 Summary:	VMware vmsync Linux kernel module
 Summary(pl.UTF-8):	Moduł jądra Linuksa VMware vmsync
-Release:	%{rel}@%{_kernel_ver_str}
+Release:	%{release}@%{_kernel_ver_str}
 Group:		Base/Kernel
 Requires(post,postun):	/sbin/depmod
 Requires:	dev >= 2.9.0-7
@@ -179,7 +179,7 @@ Moduł jądra Linuksa VMware vmsync.
 %package -n kernel%{_alt_kernel}-misc-vmxnet
 Summary:	VMware vmxnet Linux kernel module
 Summary(pl.UTF-8):	Moduł jądra Linuksa VMware vmxnet
-Release:	%{rel}@%{_kernel_ver_str}
+Release:	%{release}@%{_kernel_ver_str}
 Group:		Base/Kernel
 Requires(post,postun):	/sbin/depmod
 Requires:	dev >= 2.9.0-7
@@ -197,7 +197,7 @@ Moduł jądra Linuksa VMware vmxnet.
 %package -n kernel%{_alt_kernel}-misc-vsock
 Summary:	VMware vsock Linux kernel module
 Summary(pl.UTF-8):	Moduł jądra Linuksa VMware vsock
-Release:	%{rel}@%{_kernel_ver_str}
+Release:	%{release}@%{_kernel_ver_str}
 Group:		Base/Kernel
 Requires(post,postun):	/sbin/depmod
 Requires:	dev >= 2.9.0-7
