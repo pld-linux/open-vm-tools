@@ -5,16 +5,16 @@
 %bcond_without	userspace	# without userspace package
 
 %define		snap    2011.10.26
-%define		fsnap	%(echo %{snap} | tr -d .)
+%define		subver	%(echo %{snap} | tr -d .)
 %define		ver     8.4.2
 %define		rev     514583
-%define		rel    	6
+%define		rel    	7
 %define     modsrc	modules/linux
 Summary:	VMWare guest utilities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware
 Name:		open-vm-tools
 Version:	%{ver}
-Release:	0.%{fsnap}.%{rel}
+Release:	0.%{subver}.%{rel}
 Epoch:		1
 License:	GPL
 Group:		Applications/System
@@ -60,6 +60,9 @@ BuildRequires:	kernel%{_alt_kernel}-module-build >= 3:2.6.33
 %endif
 ExclusiveArch:	%{ix86} %{x8664}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
+
+# constify %rel macro, so it wouldn't expand in kernel subpkgs
+%{expand:%%global rel %{release}}
 
 %description
 VMWare guest utilities.
@@ -107,7 +110,7 @@ część narzędzi.
 %package -n kernel%{_alt_kernel}-misc-vmblock
 Summary:	VMware vmblock Linux kernel module
 Summary(pl.UTF-8):	Moduł jądra Linuksa VMware vmblock
-Release:	%{release}@%{_kernel_ver_str}
+Release:	%{rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
 Requires(post,postun):	/sbin/depmod
 Requires:	dev >= 2.9.0-7
@@ -125,7 +128,7 @@ Moduł jądra Linuksa VMware vmblock.
 %package -n kernel%{_alt_kernel}-misc-vmci
 Summary:	VMware vmci Linux kernel module
 Summary(pl.UTF-8):	Moduł jądra Linuksa VMware vmci
-Release:	%{release}@%{_kernel_ver_str}
+Release:	%{rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
 Requires(post,postun):	/sbin/depmod
 Requires:	dev >= 2.9.0-7
@@ -143,7 +146,7 @@ Moduł jądra Linuksa VMware vmci.
 %package -n kernel%{_alt_kernel}-misc-vmhgfs
 Summary:	VMware vmhgfs Linux kernel module
 Summary(pl.UTF-8):	Moduł jądra Linuksa VMware vmhgfs
-Release:	%{release}@%{_kernel_ver_str}
+Release:	%{rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
 Requires(post,postun):	/sbin/depmod
 Requires:	dev >= 2.9.0-7
@@ -161,7 +164,7 @@ Moduł jądra Linuksa VMware vmhgfs.
 %package -n kernel%{_alt_kernel}-misc-vmsync
 Summary:	VMware vmsync Linux kernel module
 Summary(pl.UTF-8):	Moduł jądra Linuksa VMware vmsync
-Release:	%{release}@%{_kernel_ver_str}
+Release:	%{rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
 Requires(post,postun):	/sbin/depmod
 Requires:	dev >= 2.9.0-7
@@ -179,7 +182,7 @@ Moduł jądra Linuksa VMware vmsync.
 %package -n kernel%{_alt_kernel}-misc-vmxnet
 Summary:	VMware vmxnet Linux kernel module
 Summary(pl.UTF-8):	Moduł jądra Linuksa VMware vmxnet
-Release:	%{release}@%{_kernel_ver_str}
+Release:	%{rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
 Requires(post,postun):	/sbin/depmod
 Requires:	dev >= 2.9.0-7
@@ -197,7 +200,7 @@ Moduł jądra Linuksa VMware vmxnet.
 %package -n kernel%{_alt_kernel}-misc-vsock
 Summary:	VMware vsock Linux kernel module
 Summary(pl.UTF-8):	Moduł jądra Linuksa VMware vsock
-Release:	%{release}@%{_kernel_ver_str}
+Release:	%{rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
 Requires(post,postun):	/sbin/depmod
 Requires:	dev >= 2.9.0-7
