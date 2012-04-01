@@ -305,7 +305,6 @@ fi
 %defattr(644,root,root,755)
 %doc AUTHORS ChangeLog NEWS README packaging
 %config(noreplace) %verify(not md5 mtime size) /etc/pam.d/vmtoolsd
-%endif
 %dir /etc/vmware-tools
 %attr(755,root,root) /etc/vmware-tools/*vm-*
 %attr(755,root,root) /etc/vmware-tools/statechange.subr
@@ -370,6 +369,7 @@ fi
 %files gui
 %defattr(644,root,root,755)
 %{_sysconfdir}/xdg/autostart/vmware-user.desktop
+%endif
 
 %if %{with kernel}
 %files -n kernel%{_alt_kernel}-misc-vmblock
