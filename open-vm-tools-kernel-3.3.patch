@@ -1,0 +1,18 @@
+--- open-vm-tools-8.8.2-590212/modules/linux/vmxnet/vmxnet.c~	2012-04-06 21:44:30.147182151 +0200
++++ open-vm-tools-8.8.2-590212/modules/linux/vmxnet/vmxnet.c	2012-04-06 22:20:15.724058800 +0200
+@@ -522,6 +522,7 @@
+    .get_settings        = vmxnet_get_settings,
+    .get_drvinfo         = vmxnet_get_drvinfo,
+    .get_link            = ethtool_op_get_link,
++#if LINUX_VERSION_CODE < KERNEL_VERSION(3,3,0)
+    .get_rx_csum         = vmxnet_get_rx_csum,
+    .set_rx_csum         = vmxnet_set_rx_csum,
+    .get_tx_csum         = vmxnet_get_tx_csum,
+@@ -535,6 +536,7 @@
+    .get_ufo             = ethtool_op_get_ufo,
+ #   endif
+ #endif
++#endif
+ };
+ 
+ 
