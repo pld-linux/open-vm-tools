@@ -6,21 +6,22 @@
 
 %define		snap    2011.10.26
 %define		subver	%(echo %{snap} | tr -d .)
-%define		ver     8.4.2
-%define		rev     514583
-%define		rel    	27
+%define		ver     8.8.2
+%define		rev     590212
+%define		rel    	1
 %define     modsrc	modules/linux
 Summary:	VMWare guest utilities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware
 Name:		open-vm-tools
 Version:	%{ver}
-Release:	0.%{subver}.%{rel}
+#Release:	0.%{subver}.%{rel}
+Release:	%{rel}
 Epoch:		1
 License:	GPL
 Group:		Applications/System
-#Source0:	http://downloads.sourceforge.net/project/open-vm-tools/open-vm-tools/stable-8.4.x/%{name}-%{ver}-%{rev}.tar.gz
-Source0:	http://downloads.sourceforge.net/open-vm-tools/open-vm-tools/%{snap}/%{name}-%{snap}-%{rev}.tar.gz
-# Source0-md5:	06f299375a91fbcba9d16b5007490023
+Source0:	http://downloads.sourceforge.net/project/open-vm-tools/open-vm-tools/stable-8.8.x/%{name}-%{ver}-%{rev}.tar.gz
+# Source0-md5:	601b97d54b72a601af102535a85026de
+#Source0:	http://downloads.sourceforge.net/open-vm-tools/open-vm-tools/%{snap}/%{name}-%{snap}-%{rev}.tar.gz
 Source1:	%{name}-packaging
 Source2:	%{name}-modprobe.d
 Source3:	%{name}-init
@@ -216,7 +217,8 @@ VMware vsock Linux kernel module.
 Moduł jądra Linuksa VMware vsock.
 
 %prep
-%setup -q -n %{name}-%{snap}-%{rev}
+#setup -q -n %{name}-%{snap}-%{rev}
+%setup -q -n %{name}-%{ver}-%{rev}
 cp %{SOURCE1} packaging
 %{__sed} -i -e 's|##{BUILD_OUTPUT}##|build|' docs/api/doxygen.conf
 
@@ -306,6 +308,7 @@ fi
 %doc AUTHORS ChangeLog NEWS README packaging
 %config(noreplace) %verify(not md5 mtime size) /etc/pam.d/vmtoolsd
 %dir /etc/vmware-tools
+/etc/vmware-tools/plugins
 %attr(755,root,root) /etc/vmware-tools/*vm-*
 %attr(755,root,root) /etc/vmware-tools/statechange.subr
 %dir /etc/vmware-tools/scripts
@@ -316,6 +319,7 @@ fi
 %attr(755,root,root) %{_bindir}/vmware-checkvm
 %attr(755,root,root) %{_bindir}/vmware-hgfsclient
 %attr(755,root,root) %{_bindir}/vmware-rpctool
+%attr(755,root,root) %{_bindir}/vmware-toolbox
 %attr(755,root,root) %{_bindir}/vmware-toolbox-cmd
 %attr(4755,root,root) %{_bindir}/vmware-user-suid-wrapper
 %attr(755,root,root) %{_bindir}/vmware-xferlogs
@@ -341,9 +345,13 @@ fi
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libdesktopEvents.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libdndcp.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libresolutionSet.so
-
+%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libunity.so
+%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libvixUser.so
 %attr(754,root,root) /etc/rc.d/init.d/%{name}
 /etc/modprobe.d/%{name}.conf
+%lang(de) %{_datadir}/open-vm-tools/messages/de/toolbox.vmsg
+%lang(ja) %{_datadir}/open-vm-tools/messages/ja/toolbox.vmsg
+%lang(zh_CN) %{_datadir}/open-vm-tools/messages/zh_CN/toolbox.vmsg
 
 %files devel
 %defattr(644,root,root,755)
