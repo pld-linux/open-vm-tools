@@ -26,6 +26,7 @@ Source1:	%{name}-packaging
 Source2:	%{name}-modprobe.d
 Source3:	%{name}-init
 Source4:	%{name}-vmware-user.desktop
+Patch0:		%{name}-kernel-3.2.patch
 URL:		http://open-vm-tools.sourceforge.net/
 BuildRequires:	rpmbuild(macros) >= 1.453
 %if %{with userspace}
@@ -219,6 +220,8 @@ Moduł jądra Linuksa VMware vsock.
 %prep
 #setup -q -n %{name}-%{snap}-%{rev}
 %setup -q -n %{name}-%{ver}-%{rev}
+%patch0 -p1
+
 cp %{SOURCE1} packaging
 %{__sed} -i -e 's|##{BUILD_OUTPUT}##|build|' docs/api/doxygen.conf
 
