@@ -8,26 +8,27 @@
 %define		subver	%(echo %{snap} | tr -d .)
 %define		ver     8.8.2
 %define		rev     590212
-%define		rel    	1
+%define		rel    	2
+%define		pname	open-vm-tools
 %define     modsrc	modules/linux
 Summary:	VMWare guest utilities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware
-Name:		open-vm-tools
+Name:		%{pname}%{_alt_kernel}
 Version:	%{ver}
 #Release:	0.%{subver}.%{rel}
 Release:	%{rel}
 Epoch:		1
 License:	GPL
 Group:		Applications/System
-Source0:	http://downloads.sourceforge.net/project/open-vm-tools/open-vm-tools/stable-8.8.x/%{name}-%{ver}-%{rev}.tar.gz
+Source0:	http://downloads.sourceforge.net/project/open-vm-tools/open-vm-tools/stable-8.8.x/%{pname}-%{ver}-%{rev}.tar.gz
 # Source0-md5:	601b97d54b72a601af102535a85026de
-#Source0:	http://downloads.sourceforge.net/open-vm-tools/open-vm-tools/%{snap}/%{name}-%{snap}-%{rev}.tar.gz
-Source1:	%{name}-packaging
-Source2:	%{name}-modprobe.d
-Source3:	%{name}-init
-Source4:	%{name}-vmware-user.desktop
-Patch0:		%{name}-kernel-3.2.patch
-Patch1:		%{name}-kernel-3.3.patch
+#Source0:	http://downloads.sourceforge.net/open-vm-tools/open-vm-tools/%{snap}/%{pname}-%{snap}-%{rev}.tar.gz
+Source1:	%{pname}-packaging
+Source2:	%{pname}-modprobe.d
+Source3:	%{pname}-init
+Source4:	%{pname}-vmware-user.desktop
+Patch0:		%{pname}-kernel-3.2.patch
+Patch1:		%{pname}-kernel-3.3.patch
 URL:		http://open-vm-tools.sourceforge.net/
 BuildRequires:	rpmbuild(macros) >= 1.453
 %if %{with userspace}
@@ -62,7 +63,7 @@ Obsoletes:	kernel-misc-vmmemctl
 BuildRequires:	kernel%{_alt_kernel}-module-build >= 3:2.6.33
 %endif
 ExclusiveArch:	%{ix86} %{x8664}
-BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
+BuildRoot:	%{tmpdir}/%{pname}-%{version}-root-%(id -u -n)
 
 # constify %rel macro, so it wouldn't expand in kernel subpkgs
 %{expand:%%global rel %{release}}
@@ -77,7 +78,7 @@ Narzędzia dla systemu-gościa dla VMware.
 Summary:	Header files for open-vm-tools
 Summary(pl.UTF-8):	Pliki nagłówkowe open-vm-tools
 Group:		Development/Libraries
-Requires:	%{name} = %{epoch}:%{version}-%{release}
+Requires:	%{pname} = %{epoch}:%{version}-%{release}
 
 %description devel
 Header files for open-vm-tools.
@@ -89,7 +90,7 @@ Pliki nagłówkowe open-vm-tools.
 Summary:	Static open-vm-tools libraries
 Summary(pl.UTF-8):	Statyczne biblioteki open-vm-tools
 Group:		Development/Libraries
-Requires:	%{name}-devel = %{epoch}:%{version}-%{release}
+Requires:	%{pname}-devel = %{epoch}:%{version}-%{release}
 
 %description static
 Static open-vm-tools libraries.
@@ -101,7 +102,7 @@ Statyczne biblioteki open-vm-tools.
 Summary:	VMware guest utitities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware.
 Group:		Applications/System
-Requires:	%{name} = %{epoch}:%{version}-%{release}
+Requires:	%{pname} = %{epoch}:%{version}-%{release}
 
 %description gui
 VMWare guest utilities. This package contains GUI part of tools.
@@ -219,8 +220,8 @@ VMware vsock Linux kernel module.
 Moduł jądra Linuksa VMware vsock.
 
 %prep
-#setup -q -n %{name}-%{snap}-%{rev}
-%setup -q -n %{name}-%{ver}-%{rev}
+#setup -q -n %{pname}-%{snap}-%{rev}
+%setup -q -n %{pname}-%{ver}-%{rev}
 %patch0 -p1
 %patch1 -p1
 
@@ -268,8 +269,8 @@ ln -sf %{_sbindir}/mount.vmhgfs $RPM_BUILD_ROOT/sbin/mount.vmhgfs
 rm -f $RPM_BUILD_ROOT%{_libdir}/open-vm-tools/plugins/common/*.la
 
 install -d $RPM_BUILD_ROOT/etc/{modprobe.d,rc.d/init.d,xdg/autostart}
-cp %{SOURCE2} $RPM_BUILD_ROOT/etc/modprobe.d/%{name}.conf
-cp %{SOURCE3} $RPM_BUILD_ROOT/etc/rc.d/init.d/%{name}
+cp %{SOURCE2} $RPM_BUILD_ROOT/etc/modprobe.d/%{pname}.conf
+cp %{SOURCE3} $RPM_BUILD_ROOT/etc/rc.d/init.d/%{pname}
 cp %{SOURCE4} $RPM_BUILD_ROOT/etc/xdg/autostart/vmware-user.desktop
 %endif
 
@@ -352,8 +353,8 @@ fi
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libresolutionSet.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libunity.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libvixUser.so
-%attr(754,root,root) /etc/rc.d/init.d/%{name}
-/etc/modprobe.d/%{name}.conf
+%attr(754,root,root) /etc/rc.d/init.d/%{pname}
+/etc/modprobe.d/%{pname}.conf
 %lang(de) %{_datadir}/open-vm-tools/messages/de/toolbox.vmsg
 %lang(ja) %{_datadir}/open-vm-tools/messages/ja/toolbox.vmsg
 %lang(zh_CN) %{_datadir}/open-vm-tools/messages/zh_CN/toolbox.vmsg
