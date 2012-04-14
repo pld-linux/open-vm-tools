@@ -8,7 +8,7 @@
 %define		subver	%(echo %{snap} | tr -d .)
 %define		ver     8.8.2
 %define		rev     590212
-%define		rel    	3
+%define		rel    	4
 %define		pname	open-vm-tools
 %define     modsrc	modules/linux
 Summary:	VMWare guest utilities
@@ -355,9 +355,10 @@ fi
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libvixUser.so
 %attr(754,root,root) /etc/rc.d/init.d/%{pname}
 /etc/modprobe.d/%{pname}.conf
-%lang(de) %{_datadir}/open-vm-tools/messages/de/toolbox.vmsg
-%lang(ja) %{_datadir}/open-vm-tools/messages/ja/toolbox.vmsg
-%lang(zh_CN) %{_datadir}/open-vm-tools/messages/zh_CN/toolbox.vmsg
+%dir %{_datadir}/open-vm-tools/messages
+%lang(de) %{_datadir}/open-vm-tools/messages/de
+%lang(ja) %{_datadir}/open-vm-tools/messages/ja
+%lang(zh_CN) %{_datadir}/open-vm-tools/messages/zh_CN
 
 %files devel
 %defattr(644,root,root,755)
