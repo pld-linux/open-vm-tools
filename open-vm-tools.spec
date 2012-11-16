@@ -6,9 +6,9 @@
 
 %define		snap    2011.10.26
 %define		subver	%(echo %{snap} | tr -d .)
-%define		ver     8.8.2
-%define		rev     590212
-%define		rel    	26
+%define		ver     9.2.2
+%define		rev     893683
+%define		rel	1
 %define		pname	open-vm-tools
 %define     modsrc	modules/linux
 Summary:	VMWare guest utilities
@@ -20,16 +20,13 @@ Release:	%{rel}
 Epoch:		1
 License:	GPL
 Group:		Applications/System
-Source0:	http://downloads.sourceforge.net/project/open-vm-tools/open-vm-tools/stable-8.8.x/%{pname}-%{ver}-%{rev}.tar.gz
-# Source0-md5:	601b97d54b72a601af102535a85026de
+Source0:	http://downloads.sourceforge.net/project/open-vm-tools/open-vm-tools/stable-9.2.x/%{pname}-%{ver}-%{rev}.tar.gz
+# Source0-md5:	7af505681d736d4c9ee6493b1166689f
 #Source0:	http://downloads.sourceforge.net/open-vm-tools/open-vm-tools/%{snap}/%{pname}-%{snap}-%{rev}.tar.gz
 Source1:	%{pname}-packaging
 Source2:	%{pname}-modprobe.d
 Source3:	%{pname}-init
 Source4:	%{pname}-vmware-user.desktop
-Patch0:		%{pname}-kernel-3.2.patch
-Patch1:		%{pname}-kernel-3.3.patch
-Patch2:		%{pname}-kernel-3.4.patch
 URL:		http://open-vm-tools.sourceforge.net/
 BuildRequires:	rpmbuild(macros) >= 1.453
 %if %{with userspace}
@@ -46,7 +43,7 @@ BuildRequires:	libpng-devel
 BuildRequires:	libstdc++-devel
 BuildRequires:	pam-devel
 BuildRequires:	pkgconfig
-BuildRequires:	procps-devel
+BuildRequires:	procps-devel >= 1:3.3.3-2
 BuildRequires:	uriparser-devel
 BuildRequires:	xorg-lib-libSM-devel
 BuildRequires:	xorg-lib-libX11-devel
@@ -223,9 +220,6 @@ Moduł jądra Linuksa VMware vsock.
 %prep
 #setup -q -n %{pname}-%{snap}-%{rev}
 %setup -q -n %{pname}-%{ver}-%{rev}
-%patch0 -p1
-%patch1 -p1
-%patch2 -p0
 
 cp %{SOURCE1} packaging
 %{__sed} -i -e 's|##{BUILD_OUTPUT}##|build|' docs/api/doxygen.conf
@@ -244,6 +238,7 @@ export OVT_SOURCE_DIR=$PWD
 %if %{with userspace}
 rm -rf autom4te.cache
 %{__autoconf}
+export CUSTOM_PROCPS_NAME=procps
 %configure2_13 \
 	--without-kernel-modules
 %{__make} \
@@ -316,7 +311,6 @@ fi
 %doc AUTHORS ChangeLog NEWS README packaging
 %config(noreplace) %verify(not md5 mtime size) /etc/pam.d/vmtoolsd
 %dir /etc/vmware-tools
-/etc/vmware-tools/plugins
 %attr(755,root,root) /etc/vmware-tools/*vm-*
 %attr(755,root,root) /etc/vmware-tools/statechange.subr
 %dir /etc/vmware-tools/scripts
@@ -327,7 +321,6 @@ fi
 %attr(755,root,root) %{_bindir}/vmware-checkvm
 %attr(755,root,root) %{_bindir}/vmware-hgfsclient
 %attr(755,root,root) %{_bindir}/vmware-rpctool
-%attr(755,root,root) %{_bindir}/vmware-toolbox
 %attr(755,root,root) %{_bindir}/vmware-toolbox-cmd
 %attr(4755,root,root) %{_bindir}/vmware-user-suid-wrapper
 %attr(755,root,root) %{_bindir}/vmware-xferlogs
@@ -353,14 +346,13 @@ fi
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libdesktopEvents.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libdndcp.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libresolutionSet.so
-%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libunity.so
-%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libvixUser.so
 %attr(754,root,root) /etc/rc.d/init.d/%{pname}
 /etc/modprobe.d/%{pname}.conf
 %dir %{_datadir}/open-vm-tools
 %dir %{_datadir}/open-vm-tools/messages
 %lang(de) %{_datadir}/open-vm-tools/messages/de
 %lang(ja) %{_datadir}/open-vm-tools/messages/ja
+%lang(ko) %{_datadir}/open-vm-tools/messages/ko
 %lang(zh_CN) %{_datadir}/open-vm-tools/messages/zh_CN
 
 %files devel
