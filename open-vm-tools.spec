@@ -8,7 +8,7 @@
 %define		subver	%(echo %{snap} | tr -d .)
 %define		ver     9.2.2
 %define		rev     893683
-%define		rel	3
+%define		rel	4
 %define		pname	open-vm-tools
 %define     modsrc	modules/linux
 Summary:	VMWare guest utilities
@@ -230,9 +230,11 @@ export OVT_SOURCE_DIR=$PWD
 %build_kernel_modules -C %{modsrc}/vmblock	-m vmblock	SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}
 %build_kernel_modules -C %{modsrc}/vmci		-m vmci		SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}
 %build_kernel_modules -C %{modsrc}/vmhgfs	-m vmhgfs	SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}
-%build_kernel_modules -C %{modsrc}/vmsync	-m vmsync	SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}
 %build_kernel_modules -C %{modsrc}/vmxnet	-m vmxnet	SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}
 %build_kernel_modules -C %{modsrc}/vsock	-m vsock	SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}
+%if "%{_alt_kernel}" == "-longterm"
+%build_kernel_modules -C %{modsrc}/vmsync	-m vmsync	SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}
+%endif
 %endif
 
 %if %{with userspace}
@@ -252,9 +254,11 @@ rm -rf $RPM_BUILD_ROOT
 %install_kernel_modules -m %{modsrc}/vmblock/vmblock	-d misc
 %install_kernel_modules -m %{modsrc}/vmci/vmci		-d misc
 %install_kernel_modules -m %{modsrc}/vmhgfs/vmhgfs	-d misc
-%install_kernel_modules -m %{modsrc}/vmsync/vmsync	-d misc
 %install_kernel_modules -m %{modsrc}/vmxnet/vmxnet	-d misc
 %install_kernel_modules -m %{modsrc}/vsock/vsock	-d misc
+%if "%{_alt_kernel}" == "-longterm"
+%install_kernel_modules -m %{modsrc}/vmsync/vmsync	-d misc
+%endif
 %endif
 
 %if %{with userspace}
@@ -394,9 +398,11 @@ fi
 %defattr(644,root,root,755)
 /lib/modules/%{_kernel_ver}/misc/vmhgfs.ko*
 
+%if "%{_alt_kernel}" == "-longterm"
 %files -n kernel%{_alt_kernel}-misc-vmsync
 %defattr(644,root,root,755)
 /lib/modules/%{_kernel_ver}/misc/vmsync.ko*
+%endif
 
 %files -n kernel%{_alt_kernel}-misc-vmxnet
 %defattr(644,root,root,755)
