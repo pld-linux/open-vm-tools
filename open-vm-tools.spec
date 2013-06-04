@@ -6,9 +6,9 @@
 
 %define		snap    2011.10.26
 %define		subver	%(echo %{snap} | tr -d .)
-%define		ver     9.2.2
-%define		rev     893683
-%define		rel	29
+%define		ver     9.2.3
+%define		rev     1031360
+%define		rel	1
 %define		pname	open-vm-tools
 %define     modsrc	modules/linux
 Summary:	VMWare guest utilities
@@ -21,7 +21,7 @@ Epoch:		1
 License:	GPL
 Group:		Applications/System
 Source0:	http://downloads.sourceforge.net/project/open-vm-tools/open-vm-tools/stable-9.2.x/%{pname}-%{ver}-%{rev}.tar.gz
-# Source0-md5:	7af505681d736d4c9ee6493b1166689f
+# Source0-md5:	71a1d8065b632692af2cdcc9d82f305e
 #Source0:	http://downloads.sourceforge.net/open-vm-tools/open-vm-tools/%{snap}/%{pname}-%{snap}-%{rev}.tar.gz
 Source1:	%{pname}-packaging
 Source2:	%{pname}-modprobe.d
