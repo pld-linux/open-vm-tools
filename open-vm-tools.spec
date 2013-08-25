@@ -8,7 +8,7 @@
 %define		subver	%(echo %{snap} | tr -d .)
 %define		ver     9.2.3
 %define		rev     1031360
-%define		rel	10
+%define		rel	11
 %define		pname	open-vm-tools
 %define     modsrc	modules/linux
 Summary:	VMWare guest utilities
@@ -221,7 +221,11 @@ Moduł jądra Linuksa VMware vsock.
 %prep
 #setup -q -n %{pname}-%{snap}-%{rev}
 %setup -q -n %{pname}-%{ver}-%{rev}
+%if %{with kernel}
+%if "%{_alt_kernel}" == "%{nil}"
 %patch0 -p1
+%endif
+%endif
 
 cp %{SOURCE1} packaging
 %{__sed} -i -e 's|##{BUILD_OUTPUT}##|build|' docs/api/doxygen.conf
