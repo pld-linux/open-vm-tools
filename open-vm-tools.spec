@@ -8,7 +8,7 @@
 %define		subver	%(echo %{snap} | tr -d .)
 %define		ver     9.2.3
 %define		rev     1031360
-%define		rel	9
+%define		rel	10
 %define		pname	open-vm-tools
 %define     modsrc	modules/linux
 Summary:	VMWare guest utilities
@@ -27,6 +27,7 @@ Source1:	%{pname}-packaging
 Source2:	%{pname}-modprobe.d
 Source3:	%{pname}-init
 Source4:	%{pname}-vmware-user.desktop
+Patch0:		%{pname}-linux-3.10.patch
 URL:		http://open-vm-tools.sourceforge.net/
 BuildRequires:	rpmbuild(macros) >= 1.453
 %if %{with userspace}
@@ -220,6 +221,7 @@ Moduł jądra Linuksa VMware vsock.
 %prep
 #setup -q -n %{pname}-%{snap}-%{rev}
 %setup -q -n %{pname}-%{ver}-%{rev}
+%patch0 -p1
 
 cp %{SOURCE1} packaging
 %{__sed} -i -e 's|##{BUILD_OUTPUT}##|build|' docs/api/doxygen.conf
@@ -228,11 +230,11 @@ cp %{SOURCE1} packaging
 %if %{with kernel}
 export OVT_SOURCE_DIR=$PWD
 %build_kernel_modules -C %{modsrc}/vmblock	-m vmblock	SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}
-%build_kernel_modules -C %{modsrc}/vmci		-m vmci		SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}
 %build_kernel_modules -C %{modsrc}/vmhgfs	-m vmhgfs	SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}
 %build_kernel_modules -C %{modsrc}/vmxnet	-m vmxnet	SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}
 %build_kernel_modules -C %{modsrc}/vsock	-m vsock	SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}
 %if "%{_alt_kernel}" == "-longterm"
+%build_kernel_modules -C %{modsrc}/vmci		-m vmci		SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}
 %build_kernel_modules -C %{modsrc}/vmsync	-m vmsync	SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}
 %endif
 %endif
@@ -252,11 +254,11 @@ rm -rf $RPM_BUILD_ROOT
 
 %if %{with kernel}
 %install_kernel_modules -m %{modsrc}/vmblock/vmblock	-d misc
-%install_kernel_modules -m %{modsrc}/vmci/vmci		-d misc
 %install_kernel_modules -m %{modsrc}/vmhgfs/vmhgfs	-d misc
 %install_kernel_modules -m %{modsrc}/vmxnet/vmxnet	-d misc
 %install_kernel_modules -m %{modsrc}/vsock/vsock	-d misc
 %if "%{_alt_kernel}" == "-longterm"
+%install_kernel_modules -m %{modsrc}/vmci/vmci		-d misc
 %install_kernel_modules -m %{modsrc}/vmsync/vmsync	-d misc
 %endif
 %endif
@@ -390,15 +392,15 @@ fi
 %defattr(644,root,root,755)
 /lib/modules/%{_kernel_ver}/misc/vmblock.ko*
 
-%files -n kernel%{_alt_kernel}-misc-vmci
-%defattr(644,root,root,755)
-/lib/modules/%{_kernel_ver}/misc/vmci.ko*
-
 %files -n kernel%{_alt_kernel}-misc-vmhgfs
 %defattr(644,root,root,755)
 /lib/modules/%{_kernel_ver}/misc/vmhgfs.ko*
 
 %if "%{_alt_kernel}" == "-longterm"
+%files -n kernel%{_alt_kernel}-misc-vmci
+%defattr(644,root,root,755)
+/lib/modules/%{_kernel_ver}/misc/vmci.ko*
+
 %files -n kernel%{_alt_kernel}-misc-vmsync
 %defattr(644,root,root,755)
 /lib/modules/%{_kernel_ver}/misc/vmsync.ko*
