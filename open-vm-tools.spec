@@ -3,6 +3,13 @@
 %bcond_without	kernel		# without kernel modules
 %bcond_without	dist_kernel	# without distribution kernel
 %bcond_without	userspace	# without userspace package
+#
+%if "%{_alt_kernel}" != "%{nil}"
+%undefine	with_userspace
+%endif
+%if %{without kernel}
+%undefine	with_dist_kernel
+%endif
 
 %define		snap    2011.10.26
 %define		subver	%(echo %{snap} | tr -d .)
@@ -10,7 +17,7 @@
 %define		rev     1031360
 %define		rel	12
 %define		pname	open-vm-tools
-%define     modsrc	modules/linux
+%define		modsrc	modules/linux
 Summary:	VMWare guest utilities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware
 Name:		%{pname}%{_alt_kernel}
