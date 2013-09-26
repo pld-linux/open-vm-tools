@@ -12,6 +12,7 @@
 . /etc/rc.d/init.d/functions
 
 RETVAL=0
+kver=`uname -r`
 
 is_ESX_running() {
     if [ ! -f /usr/bin/vmware-checkvm ] ; then
@@ -28,7 +29,6 @@ is_ESX_running() {
 
 module_exist() {
 	module=$1
-	kver=`uname -r`
 	[ -f /lib/modules/$kver/misc/$module.ko* ] && echo "yes" || echo "no"
 }
 
