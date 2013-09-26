@@ -10,6 +10,7 @@
 
 # Source function library.
 . /etc/rc.d/init.d/functions
+set -x
 
 RETVAL=0
 kver=`uname -r`
@@ -27,9 +28,10 @@ is_ESX_running() {
     fi
 }
 
+# return true if $module exists for current kernel
 module_exist() {
-	module=$1
-	[ -f /lib/modules/$kver/misc/$module.ko* ] && echo "yes" || echo "no"
+	local module=$1
+	test -f /lib/modules/$kver/misc/$module.ko*
 }
 
 start_vmxnet() {
@@ -41,7 +43,7 @@ start_vmxnet() {
 
 	msg_starting "Open Virtual Machine vmxnet script"
 	busy
-	if is_no `module_exist vmxnet`; then
+	if ! module_exist vmxnet; then
 		fail
 		echo -e "\tCan't find vmxnet module"
 		RETVAL=1
@@ -70,7 +72,7 @@ stop_vmxnet() {
 start_vmblock() {
 	# vmblock is not required and unsupported on ESX so first check
 	# if it's installed then try to use
-	is_no `module_exist vmblock` && return
+	module_exist vmblock || return
 
 	# Check if the service is already running?
 	if [ -f /var/lock/subsys/open-vm-tools-vmblock ]; then
@@ -90,7 +92,7 @@ start_vmblock() {
 }
 
 stop_vmblock() {
-	is_no `module_exist vmblock` && return
+	module_exist vmblock || return
 
 	if [ ! -f /var/lock/subsys/open-vm-tools-vmblock ]; then
 		msg_not_running "Open Virtual Machine vmblock script"
@@ -108,7 +110,7 @@ stop_vmblock() {
 start_vmhgfs() {
 	# vmhgfs is not required and usupported on ESX so first check
 	# if it's installed then try to use
-	is_no `module_exist vmhgfs` && return
+	module_exist vmhgfs || return
 
 	# Check if the service is already running?
 	if [ -f /var/lock/subsys/open-vm-tools-vmhgfs ]; then
@@ -127,7 +129,7 @@ start_vmhgfs() {
 }
 
 stop_vmhgfs() {
-	is_no `module_exist vmhgfs` && return
+	module_exist vmhgfs || return
 
 	if [ ! -f /var/lock/subsys/open-vm-tools-vmhgfs ]; then
 		msg_not_running "Open Virtual Machine vmhgfs script"
