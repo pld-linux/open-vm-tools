@@ -36,7 +36,7 @@ exit 1
 %define		subver	%(echo %{snap} | tr -d .)
 %define		ver     9.4.0
 %define		rev     1280544
-%define		rel	3
+%define		rel	4
 %define		pname	open-vm-tools
 %define		modsrc	modules/linux
 Summary:	VMWare guest utilities
@@ -89,9 +89,6 @@ Obsoletes:	kernel-misc-vmmemctl
 %{?with_dist_kernel:BuildRequires:	kernel%{_alt_kernel}-module-build >= 3:2.6.20.2}
 ExclusiveArch:	%{ix86} %{x8664}
 BuildRoot:	%{tmpdir}/%{pname}-%{version}-root-%(id -u -n)
-
-# constify %rel macro, so it wouldn't expand in kernel subpkgs
-%{expand:%%global rel %{release}}
 
 %description
 VMWare guest utilities.
