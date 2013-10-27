@@ -36,7 +36,7 @@ exit 1
 %define		subver	%(echo %{snap} | tr -d .)
 %define		ver     9.4.0
 %define		rev     1280544
-%define		rel	2
+%define		rel	3
 %define		pname	open-vm-tools
 %define		modsrc	modules/linux
 Summary:	VMWare guest utilities
@@ -57,7 +57,7 @@ Source3:	%{pname}-init
 Source4:	%{pname}-vmware-user.desktop
 Patch0:		%{pname}-linux-3.10.patch
 URL:		http://open-vm-tools.sourceforge.net/
-BuildRequires:	rpmbuild(macros) >= 1.678
+BuildRequires:	rpmbuild(macros) >= 1.679
 %if %{with userspace}
 BuildRequires:	autoconf
 BuildRequires:	doxygen
@@ -254,7 +254,7 @@ Moduł jądra Linuksa VMware vsock.\
 %defattr(644,root,root,755)\
 /lib/modules/%{_kernel_ver}/misc/vmhgfs.ko*\
 \
-%if "%{_kernel_ver}" < "3.10.0"\
+%if %{_kernel_version_code} < %{_kernel_version_magic 3 10 0}\
 %files -n kernel%{_alt_kernel}-misc-vmci\
 %defattr(644,root,root,755)\
 /lib/modules/%{_kernel_ver}/misc/vmci.ko*\
@@ -302,7 +302,7 @@ export OVT_SOURCE_DIR=$PWD\
 %install_kernel_modules -D installed -m %{modsrc}/vmhgfs/vmhgfs -d misc\
 %install_kernel_modules -D installed -m %{modsrc}/vmxnet/vmxnet -d misc\
 %install_kernel_modules -D installed -m %{modsrc}/vsock/vsock -d misc\
-%if "%{_kernel_ver}" < "3.10.0"\
+%if %{_kernel_version_code} < %{_kernel_version_magic 3 10 0}\
 %build_kernel_modules -C %{modsrc}/vmci -m vmci SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}\
 %build_kernel_modules -C %{modsrc}/vmsync -m vmsync SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}\
 %install_kernel_modules -D installed -m %{modsrc}/vmci/vmci -d misc\
