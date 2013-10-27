@@ -3,27 +3,48 @@
 %bcond_without	kernel		# without kernel modules
 %bcond_without	dist_kernel	# without distribution kernel
 %bcond_without	userspace	# without userspace package
-#
-%if "%{_alt_kernel}" != "%{nil}"
-%undefine	with_userspace
-%endif
+%bcond_with	verbose		# verbose build (V=1)
+
 %if %{without kernel}
 %undefine	with_dist_kernel
 %endif
+
+# The goal here is to have main, userspace, package built once with
+# simple release number, and only rebuild kernel packages with kernel
+# version as part of release number, without the need to bump release
+# with every kernel change.
+%if 0%{?_pld_builder:1} && %{with kernel} && %{with userspace}
+%{error:kernel and userspace cannot be built at the same time on PLD builders}
+exit 1
+%endif
+
+%if "%{_alt_kernel}" != "%{nil}"
+%if 0%{?build_kernels:1}
+%{error:alt_kernel and build_kernels are mutually exclusive}
+exit 1
+%endif
+%undefine	with_userspace
+%global		_build_kernels		%{alt_kernel}
+%else
+%global		_build_kernels		%{?build_kernels:,%{?build_kernels}}
+%endif
+
+%define		kpkg	%(echo %{_build_kernels} | tr , '\\n' | while read n ; do echo %%undefine alt_kernel ; [ -z "$n" ] || echo %%define alt_kernel $n ; echo %%kernel_pkg ; done)
+%define		bkpkg	%(echo %{_build_kernels} | tr , '\\n' | while read n ; do echo %%undefine alt_kernel ; [ -z "$n" ] || echo %%define alt_kernel $n ; echo %%build_kernel_pkg ; done)
 
 %define		snap    2011.10.26
 %define		subver	%(echo %{snap} | tr -d .)
 %define		ver     9.4.0
 %define		rev     1280544
-%define		rel	1
+%define		rel	2
 %define		pname	open-vm-tools
 %define		modsrc	modules/linux
 Summary:	VMWare guest utilities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware
 Name:		%{pname}%{_alt_kernel}
 Version:	%{ver}
-#Release:	0.%{subver}.%{rel}
-Release:	%{rel}
+#Release:	0.%{subver}.%{rel}%{?with_kernel:@%{_kernel_ver_str}}
+Release:	%{rel}%{?with_kernel:@%{_kernel_ver_str}}
 Epoch:		1
 License:	GPL
 Group:		Applications/System
@@ -36,7 +57,7 @@ Source3:	%{pname}-init
 Source4:	%{pname}-vmware-user.desktop
 Patch0:		%{pname}-linux-3.10.patch
 URL:		http://open-vm-tools.sourceforge.net/
-BuildRequires:	rpmbuild(macros) >= 1.453
+BuildRequires:	rpmbuild(macros) >= 1.678
 %if %{with userspace}
 BuildRequires:	autoconf
 BuildRequires:	doxygen
@@ -65,9 +86,7 @@ Requires:	libicu
 Obsoletes:	kernel-misc-pvscsi
 Obsoletes:	kernel-misc-vmmemctl
 %endif
-%if %{with kernel} && %{with dist_kernel}
-BuildRequires:	kernel%{_alt_kernel}-module-build >= 3:2.6.33
-%endif
+%{?with_dist_kernel:BuildRequires:	kernel%{_alt_kernel}-module-build >= 3:2.6.20.2}
 ExclusiveArch:	%{ix86} %{x8664}
 BuildRoot:	%{tmpdir}/%{pname}-%{version}-root-%(id -u -n)
 
@@ -117,138 +136,194 @@ VMWare guest utilities. This package contains GUI part of tools.
 Narzędzia dla systemu-gościa dla VMware. Ten pakiet zawiera graficzną
 część narzędzi.
 
-%package -n kernel%{_alt_kernel}-misc-vmblock
-Summary:	VMware vmblock Linux kernel module
-Summary(pl.UTF-8):	Moduł jądra Linuksa VMware vmblock
-Release:	%{rel}@%{_kernel_ver_str}
-Group:		Base/Kernel
-Requires(post,postun):	/sbin/depmod
-Requires:	dev >= 2.9.0-7
-%if %{with dist_kernel}
-%requires_releq_kernel
-Requires(postun):	%releq_kernel
-%endif
+%define	kernel_pkg()\
+%package -n kernel%{_alt_kernel}-misc-vmblock\
+Summary:	VMware vmblock Linux kernel module\
+Summary(pl.UTF-8):	Moduł jądra Linuksa VMware vmblock\
+Release:	%{rel}@%{_kernel_ver_str}\
+Group:		Base/Kernel\
+Requires(post,postun):	/sbin/depmod\
+Requires:	dev >= 2.9.0-7\
+%if %{with dist_kernel}\
+%requires_releq_kernel\
+Requires(postun):	%releq_kernel\
+%endif\
+\
+%description -n kernel%{_alt_kernel}-misc-vmblock\
+VMware vmblock Linux kernel module.\
+\
+%description -n kernel%{_alt_kernel}-misc-vmblock -l pl.UTF-8\
+Moduł jądra Linuksa VMware vmblock.\
+\
+%package -n kernel%{_alt_kernel}-misc-vmci\
+Summary:	VMware vmci Linux kernel module\
+Summary(pl.UTF-8):	Moduł jądra Linuksa VMware vmci\
+Release:	%{rel}@%{_kernel_ver_str}\
+Group:		Base/Kernel\
+Requires(post,postun):	/sbin/depmod\
+Requires:	dev >= 2.9.0-7\
+%if %{with dist_kernel}\
+%requires_releq_kernel\
+Requires(postun):	%releq_kernel\
+%endif\
+\
+%description -n kernel%{_alt_kernel}-misc-vmci\
+VMware vmci Linux kernel module.\
+\
+%description -n kernel%{_alt_kernel}-misc-vmci -l pl.UTF-8\
+Moduł jądra Linuksa VMware vmci.\
+\
+%package -n kernel%{_alt_kernel}-misc-vmhgfs\
+Summary:	VMware vmhgfs Linux kernel module\
+Summary(pl.UTF-8):	Moduł jądra Linuksa VMware vmhgfs\
+Release:	%{rel}@%{_kernel_ver_str}\
+Group:		Base/Kernel\
+Requires(post,postun):	/sbin/depmod\
+Requires:	dev >= 2.9.0-7\
+%if %{with dist_kernel}\
+%requires_releq_kernel\
+Requires(postun):	%releq_kernel\
+%endif\
+\
+%description -n kernel%{_alt_kernel}-misc-vmhgfs\
+VMware vmhgfs Linux kernel module.\
+\
+%description -n kernel%{_alt_kernel}-misc-vmhgfs -l pl.UTF-8\
+Moduł jądra Linuksa VMware vmhgfs.\
+\
+%package -n kernel%{_alt_kernel}-misc-vmsync\
+Summary:	VMware vmsync Linux kernel module\
+Summary(pl.UTF-8):	Moduł jądra Linuksa VMware vmsync\
+Release:	%{rel}@%{_kernel_ver_str}\
+Group:		Base/Kernel\
+Requires(post,postun):	/sbin/depmod\
+Requires:	dev >= 2.9.0-7\
+%if %{with dist_kernel}\
+%requires_releq_kernel\
+Requires(postun):	%releq_kernel\
+%endif\
+\
+%description -n kernel%{_alt_kernel}-misc-vmsync\
+VMware vmsync Linux kernel module.\
+\
+%description -n kernel%{_alt_kernel}-misc-vmsync -l pl.UTF-8\
+Moduł jądra Linuksa VMware vmsync.\
+\
+%package -n kernel%{_alt_kernel}-misc-vmxnet\
+Summary:	VMware vmxnet Linux kernel module\
+Summary(pl.UTF-8):	Moduł jądra Linuksa VMware vmxnet\
+Release:	%{rel}@%{_kernel_ver_str}\
+Group:		Base/Kernel\
+Requires(post,postun):	/sbin/depmod\
+Requires:	dev >= 2.9.0-7\
+%if %{with dist_kernel}\
+%requires_releq_kernel\
+Requires(postun):	%releq_kernel\
+%endif\
+\
+%description -n kernel%{_alt_kernel}-misc-vmxnet\
+VMware vmxnet Linux kernel module.\
+\
+%description -n kernel%{_alt_kernel}-misc-vmxnet -l pl.UTF-8\
+Moduł jądra Linuksa VMware vmxnet.\
+\
+%package -n kernel%{_alt_kernel}-misc-vsock\
+Summary:	VMware vsock Linux kernel module\
+Summary(pl.UTF-8):	Moduł jądra Linuksa VMware vsock\
+Release:	%{rel}@%{_kernel_ver_str}\
+Group:		Base/Kernel\
+Requires(post,postun):	/sbin/depmod\
+Requires:	dev >= 2.9.0-7\
+%if %{with dist_kernel}\
+%requires_releq_kernel\
+Requires(postun):	%releq_kernel\
+%endif\
+\
+%description -n kernel%{_alt_kernel}-misc-vsock\
+VMware vsock Linux kernel module.\
+\
+%description -n kernel%{_alt_kernel}-misc-vsock -l pl.UTF-8\
+Moduł jądra Linuksa VMware vsock.\
+\
+%if %{with kernel}\
+%files -n kernel%{_alt_kernel}-misc-vmblock\
+%defattr(644,root,root,755)\
+/lib/modules/%{_kernel_ver}/misc/vmblock.ko*\
+\
+%files -n kernel%{_alt_kernel}-misc-vmhgfs\
+%defattr(644,root,root,755)\
+/lib/modules/%{_kernel_ver}/misc/vmhgfs.ko*\
+\
+%if "%{_kernel_ver}" < "3.10.0"\
+%files -n kernel%{_alt_kernel}-misc-vmci\
+%defattr(644,root,root,755)\
+/lib/modules/%{_kernel_ver}/misc/vmci.ko*\
+\
+%files -n kernel%{_alt_kernel}-misc-vmsync\
+%defattr(644,root,root,755)\
+/lib/modules/%{_kernel_ver}/misc/vmsync.ko*\
+%endif\
+\
+%files -n kernel%{_alt_kernel}-misc-vmxnet\
+%defattr(644,root,root,755)\
+/lib/modules/%{_kernel_ver}/misc/vmxnet.ko*\
+\
+%files -n kernel%{_alt_kernel}-misc-vsock\
+%defattr(644,root,root,755)\
+/lib/modules/%{_kernel_ver}/misc/vsock.ko*\
+%endif\
+\
+%post	-n kernel%{_alt_kernel}-misc-vmblock\
+%depmod %{_kernel_ver}\
+\
+%post	-n kernel%{_alt_kernel}-misc-vmci\
+%depmod %{_kernel_ver}\
+\
+%post	-n kernel%{_alt_kernel}-misc-vmhgfs\
+%depmod %{_kernel_ver}\
+\
+%post	-n kernel%{_alt_kernel}-misc-vmsync\
+%depmod %{_kernel_ver}\
+\
+%post	-n kernel%{_alt_kernel}-misc-vmxnet\
+%depmod %{_kernel_ver}\
+\
+%post	-n kernel%{_alt_kernel}-misc-vsock\
+%depmod %{_kernel_ver}\
+%{nil}
 
-%description -n kernel%{_alt_kernel}-misc-vmblock
-VMware vmblock Linux kernel module.
+%define build_kernel_pkg()\
+export OVT_SOURCE_DIR=$PWD\
+%build_kernel_modules -C %{modsrc}/vmblock -m vmblock SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}\
+%build_kernel_modules -C %{modsrc}/vmhgfs -m vmhgfs SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}\
+%build_kernel_modules -C %{modsrc}/vmxnet -m vmxnet SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}\
+%build_kernel_modules -C %{modsrc}/vsock -m vsock SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}\
+%install_kernel_modules -D installed -m %{modsrc}/vmblock/vmblock -d misc\
+%install_kernel_modules -D installed -m %{modsrc}/vmhgfs/vmhgfs -d misc\
+%install_kernel_modules -D installed -m %{modsrc}/vmxnet/vmxnet -d misc\
+%install_kernel_modules -D installed -m %{modsrc}/vsock/vsock -d misc\
+%if "%{_kernel_ver}" < "3.10.0"\
+%build_kernel_modules -C %{modsrc}/vmci -m vmci SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}\
+%build_kernel_modules -C %{modsrc}/vmsync -m vmsync SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}\
+%install_kernel_modules -D installed -m %{modsrc}/vmci/vmci -d misc\
+%install_kernel_modules -D installed -m %{modsrc}/vmsync/vmsync -d misc\
+%endif\
+%{nil}
 
-%description -n kernel%{_alt_kernel}-misc-vmblock -l pl.UTF-8
-Moduł jądra Linuksa VMware vmblock.
-
-%package -n kernel%{_alt_kernel}-misc-vmci
-Summary:	VMware vmci Linux kernel module
-Summary(pl.UTF-8):	Moduł jądra Linuksa VMware vmci
-Release:	%{rel}@%{_kernel_ver_str}
-Group:		Base/Kernel
-Requires(post,postun):	/sbin/depmod
-Requires:	dev >= 2.9.0-7
-%if %{with dist_kernel}
-%requires_releq_kernel
-Requires(postun):	%releq_kernel
-%endif
-
-%description -n kernel%{_alt_kernel}-misc-vmci
-VMware vmci Linux kernel module.
-
-%description -n kernel%{_alt_kernel}-misc-vmci -l pl.UTF-8
-Moduł jądra Linuksa VMware vmci.
-
-%package -n kernel%{_alt_kernel}-misc-vmhgfs
-Summary:	VMware vmhgfs Linux kernel module
-Summary(pl.UTF-8):	Moduł jądra Linuksa VMware vmhgfs
-Release:	%{rel}@%{_kernel_ver_str}
-Group:		Base/Kernel
-Requires(post,postun):	/sbin/depmod
-Requires:	dev >= 2.9.0-7
-%if %{with dist_kernel}
-%requires_releq_kernel
-Requires(postun):	%releq_kernel
-%endif
-
-%description -n kernel%{_alt_kernel}-misc-vmhgfs
-VMware vmhgfs Linux kernel module.
-
-%description -n kernel%{_alt_kernel}-misc-vmhgfs -l pl.UTF-8
-Moduł jądra Linuksa VMware vmhgfs.
-
-%package -n kernel%{_alt_kernel}-misc-vmsync
-Summary:	VMware vmsync Linux kernel module
-Summary(pl.UTF-8):	Moduł jądra Linuksa VMware vmsync
-Release:	%{rel}@%{_kernel_ver_str}
-Group:		Base/Kernel
-Requires(post,postun):	/sbin/depmod
-Requires:	dev >= 2.9.0-7
-%if %{with dist_kernel}
-%requires_releq_kernel
-Requires(postun):	%releq_kernel
-%endif
-
-%description -n kernel%{_alt_kernel}-misc-vmsync
-VMware vmsync Linux kernel module.
-
-%description -n kernel%{_alt_kernel}-misc-vmsync -l pl.UTF-8
-Moduł jądra Linuksa VMware vmsync.
-
-%package -n kernel%{_alt_kernel}-misc-vmxnet
-Summary:	VMware vmxnet Linux kernel module
-Summary(pl.UTF-8):	Moduł jądra Linuksa VMware vmxnet
-Release:	%{rel}@%{_kernel_ver_str}
-Group:		Base/Kernel
-Requires(post,postun):	/sbin/depmod
-Requires:	dev >= 2.9.0-7
-%if %{with dist_kernel}
-%requires_releq_kernel
-Requires(postun):	%releq_kernel
-%endif
-
-%description -n kernel%{_alt_kernel}-misc-vmxnet
-VMware vmxnet Linux kernel module.
-
-%description -n kernel%{_alt_kernel}-misc-vmxnet -l pl.UTF-8
-Moduł jądra Linuksa VMware vmxnet.
-
-%package -n kernel%{_alt_kernel}-misc-vsock
-Summary:	VMware vsock Linux kernel module
-Summary(pl.UTF-8):	Moduł jądra Linuksa VMware vsock
-Release:	%{rel}@%{_kernel_ver_str}
-Group:		Base/Kernel
-Requires(post,postun):	/sbin/depmod
-Requires:	dev >= 2.9.0-7
-%if %{with dist_kernel}
-%requires_releq_kernel
-Requires(postun):	%releq_kernel
-%endif
-
-%description -n kernel%{_alt_kernel}-misc-vsock
-VMware vsock Linux kernel module.
-
-%description -n kernel%{_alt_kernel}-misc-vsock -l pl.UTF-8
-Moduł jądra Linuksa VMware vsock.
+%{?with_kernel:%{expand:%kpkg}}
 
 %prep
 #setup -q -n %{pname}-%{snap}-%{rev}
 %setup -q -n %{pname}-%{ver}-%{rev}
 %if %{with kernel}
-%if "%{_alt_kernel}" == "%{nil}"
 %patch0 -p1
-%endif
 %endif
 
 cp %{SOURCE1} packaging
 %{__sed} -i -e 's|##{BUILD_OUTPUT}##|build|' docs/api/doxygen.conf
 
 %build
-%if %{with kernel}
-export OVT_SOURCE_DIR=$PWD
-%build_kernel_modules -C %{modsrc}/vmblock	-m vmblock	SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}
-%build_kernel_modules -C %{modsrc}/vmhgfs	-m vmhgfs	SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}
-%build_kernel_modules -C %{modsrc}/vmxnet	-m vmxnet	SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}
-%build_kernel_modules -C %{modsrc}/vsock	-m vsock	SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}
-%if "%{_alt_kernel}" == "-longterm"
-%build_kernel_modules -C %{modsrc}/vmci		-m vmci		SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}
-%build_kernel_modules -C %{modsrc}/vmsync	-m vmsync	SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}
-%endif
-%endif
+%{?with_kernel:%{expand:%bkpkg}}
 
 %if %{with userspace}
 rm -rf autom4te.cache
@@ -264,14 +339,8 @@ export CUSTOM_PROCPS_NAME=procps
 rm -rf $RPM_BUILD_ROOT
 
 %if %{with kernel}
-%install_kernel_modules -m %{modsrc}/vmblock/vmblock	-d misc
-%install_kernel_modules -m %{modsrc}/vmhgfs/vmhgfs	-d misc
-%install_kernel_modules -m %{modsrc}/vmxnet/vmxnet	-d misc
-%install_kernel_modules -m %{modsrc}/vsock/vsock	-d misc
-%if "%{_alt_kernel}" == "-longterm"
-%install_kernel_modules -m %{modsrc}/vmci/vmci		-d misc
-%install_kernel_modules -m %{modsrc}/vmsync/vmsync	-d misc
-%endif
+install -d $RPM_BUILD_ROOT
+cp -a installed/* $RPM_BUILD_ROOT
 %endif
 
 %if %{with userspace}
@@ -302,25 +371,7 @@ if [ "$1" = "0" ]; then
 	/sbin/chkconfig --del open-vm-tools
 fi
 
-%postun	-p /sbin/ldconfig
-
-%post	-n kernel%{_alt_kernel}-misc-vmblock
-%depmod %{_kernel_ver}
-
-%post	-n kernel%{_alt_kernel}-misc-vmci
-%depmod %{_kernel_ver}
-
-%post	-n kernel%{_alt_kernel}-misc-vmhgfs
-%depmod %{_kernel_ver}
-
-%post	-n kernel%{_alt_kernel}-misc-vmsync
-%depmod %{_kernel_ver}
-
-%post	-n kernel%{_alt_kernel}-misc-vmxnet
-%depmod %{_kernel_ver}
-
-%post	-n kernel%{_alt_kernel}-misc-vsock
-%depmod %{_kernel_ver}
+%postun -p /sbin/ldconfig
 
 %if %{with userspace}
 %files
@@ -396,32 +447,4 @@ fi
 %files gui
 %defattr(644,root,root,755)
 %{_sysconfdir}/xdg/autostart/vmware-user.desktop
-%endif
-
-%if %{with kernel}
-%files -n kernel%{_alt_kernel}-misc-vmblock
-%defattr(644,root,root,755)
-/lib/modules/%{_kernel_ver}/misc/vmblock.ko*
-
-%files -n kernel%{_alt_kernel}-misc-vmhgfs
-%defattr(644,root,root,755)
-/lib/modules/%{_kernel_ver}/misc/vmhgfs.ko*
-
-%if "%{_alt_kernel}" == "-longterm"
-%files -n kernel%{_alt_kernel}-misc-vmci
-%defattr(644,root,root,755)
-/lib/modules/%{_kernel_ver}/misc/vmci.ko*
-
-%files -n kernel%{_alt_kernel}-misc-vmsync
-%defattr(644,root,root,755)
-/lib/modules/%{_kernel_ver}/misc/vmsync.ko*
-%endif
-
-%files -n kernel%{_alt_kernel}-misc-vmxnet
-%defattr(644,root,root,755)
-/lib/modules/%{_kernel_ver}/misc/vmxnet.ko*
-
-%files -n kernel%{_alt_kernel}-misc-vsock
-%defattr(644,root,root,755)
-/lib/modules/%{_kernel_ver}/misc/vsock.ko*
 %endif
