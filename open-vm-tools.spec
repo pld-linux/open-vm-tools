@@ -37,7 +37,7 @@ exit 1
 %define		subver	%(echo %{snap} | tr -d .)
 %define		ver     9.4.0
 %define		rev     1280544
-%define		rel	9
+%define		rel	10
 %define		pname	open-vm-tools
 %define		modsrc	modules/linux
 Summary:	VMWare guest utilities
@@ -59,6 +59,7 @@ Source4:	%{pname}-vmware-user.desktop
 Patch0:		%{pname}-linux-3.10.patch
 Patch1:		%{pname}-linux-3.11.patch
 Patch2:		%{pname}-linux-3.12.patch
+Patch3:		%{pname}-linux-3.14.patch
 URL:		http://open-vm-tools.sourceforge.net/
 BuildRequires:	rpmbuild(macros) >= 1.679
 %if %{with userspace}
@@ -319,6 +320,7 @@ export OVT_SOURCE_DIR=$PWD\
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 %endif
 
 cp %{SOURCE1} packaging
