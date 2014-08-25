@@ -35,9 +35,9 @@ exit 1
 
 %define		snap    2011.10.26
 %define		subver	%(echo %{snap} | tr -d .)
-%define		ver     9.4.0
-%define		rev     1280544
-%define		rel	11
+%define		ver     9.4.6
+%define		rev     1770165
+%define		rel	1
 %define		pname	open-vm-tools
 %define		modsrc	modules/linux
 Summary:	VMWare guest utilities
@@ -50,17 +50,17 @@ Epoch:		1
 License:	GPL
 Group:		Applications/System
 Source0:	http://downloads.sourceforge.net/project/open-vm-tools/open-vm-tools/stable-9.4.x/%{pname}-%{ver}-%{rev}.tar.gz
-# Source0-md5:	91f74bf6e42a3f460a42b3be31db31dc
+# Source0-md5:	3969daf1535d34e1c5f0c87a779b7642
 #Source0:	http://downloads.sourceforge.net/open-vm-tools/open-vm-tools/%{snap}/%{pname}-%{snap}-%{rev}.tar.gz
 Source1:	%{pname}-packaging
 Source2:	%{pname}-modprobe.d
 Source3:	%{pname}-init
 Source4:	%{pname}-vmware-user.desktop
 Patch0:		%{pname}-linux-3.10.patch
-Patch1:		%{pname}-linux-3.11.patch
 Patch2:		%{pname}-linux-3.12.patch
 Patch3:		%{pname}-linux-3.14.patch
 Patch4:		%{pname}-linux-3.15.patch
+Patch5:		%{pname}-linux-3.16.patch
 URL:		http://open-vm-tools.sourceforge.net/
 BuildRequires:	rpmbuild(macros) >= 1.679
 %if %{with userspace}
@@ -319,10 +319,10 @@ export OVT_SOURCE_DIR=$PWD\
 %setup -q -n %{pname}-%{ver}-%{rev}
 %if %{with kernel}
 %patch0 -p1
-%patch1 -p1
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+%patch5 -p1
 %endif
 
 cp %{SOURCE1} packaging
@@ -333,6 +333,10 @@ cp %{SOURCE1} packaging
 
 %if %{with userspace}
 rm -rf autom4te.cache
+install -d config
+%{__libtoolize}
+%{__aclocal} -I m4
+%{__automake}
 %{__autoconf}
 export CUSTOM_PROCPS_NAME=procps
 %configure2_13 \
