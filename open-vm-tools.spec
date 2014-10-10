@@ -37,7 +37,7 @@ exit 1
 %define		subver	%(echo %{snap} | tr -d .)
 %define		ver     9.4.6
 %define		rev     1770165
-%define		rel	2
+%define		rel	3
 %define		pname	open-vm-tools
 %define		modsrc	modules/linux
 Summary:	VMWare guest utilities
