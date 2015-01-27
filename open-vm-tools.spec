@@ -13,20 +13,10 @@
 exit 1
 %endif
 
-%if "%{_alt_kernel}" != "%{nil}"
-%if 0%{?build_kernels:1}
-%{error:alt_kernel and build_kernels are mutually exclusive}
-exit 1
+%if %{without userspace}
+# nothing to be placed to debuginfo package
+%define		_enable_debug_packages	0
 %endif
-%undefine	with_userspace
-%global		_build_kernels		%{alt_kernel}
-%else
-%global		_build_kernels		%{?build_kernels:,%{?build_kernels}}
-%endif
-
-%define		kbrs	%(echo %{_build_kernels} | tr , '\\n' | while read n ; do echo %%undefine alt_kernel ; [ -z "$n" ] || echo %%define alt_kernel $n ; echo "BuildRequires:kernel%%{_alt_kernel}-module-build >= 3:2.6.20.2" ; done)
-%define		kpkg	%(echo %{_build_kernels} | tr , '\\n' | while read n ; do echo %%undefine alt_kernel ; [ -z "$n" ] || echo %%define alt_kernel $n ; echo %%kernel_pkg ; done)
-%define		bkpkg	%(echo %{_build_kernels} | tr , '\\n' | while read n ; do echo %%undefine alt_kernel ; [ -z "$n" ] || echo %%define alt_kernel $n ; echo %%build_kernel_pkg ; done)
 
 %define		snap    2011.10.26
 %define		subver	%(echo %{snap} | tr -d .)
@@ -58,7 +48,7 @@ Patch4:		%{pname}-linux-3.15.patch
 Patch5:		%{pname}-linux-3.16.patch
 Patch6:		%{pname}-linux-3.18.3.patch
 URL:		http://open-vm-tools.sourceforge.net/
-BuildRequires:	rpmbuild(macros) >= 1.679
+BuildRequires:	rpmbuild(macros) >= 1.701
 %if %{with userspace}
 BuildRequires:	autoconf
 BuildRequires:	doxygen
@@ -87,7 +77,7 @@ Requires:	libicu
 Obsoletes:	kernel-misc-pvscsi
 Obsoletes:	kernel-misc-vmmemctl
 %endif
-%{?with_kernel:%{expand:%kbrs}}
+%{?with_kernel:%{expand:%buildrequires_kernel kernel%%{_alt_kernel}-module-build >= 3:2.6.20.2}}
 ExclusiveArch:	%{ix86} %{x8664}
 BuildRoot:	%{tmpdir}/%{pname}-%{version}-root-%(id -u -n)
 
@@ -296,7 +286,7 @@ export OVT_SOURCE_DIR=$PWD\
 %endif\
 %{nil}
 
-%{?with_kernel:%{expand:%kpkg}}
+%{?with_kernel:%{expand:%create_kernel_packages}}
 
 %prep
 #setup -q -n %{pname}-%{snap}-%{rev}
@@ -314,7 +304,7 @@ cp %{SOURCE1} packaging
 %{__sed} -i -e 's|##{BUILD_OUTPUT}##|build|' docs/api/doxygen.conf
 
 %build
-%{?with_kernel:%{expand:%bkpkg}}
+%{?with_kernel:%{expand:%build_kernel_packages}}
 
 %if %{with userspace}
 rm -rf autom4te.cache
