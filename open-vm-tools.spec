@@ -1,13 +1,8 @@
 #
 # Conditional build:
 %bcond_without	kernel		# without kernel modules
-%bcond_without	dist_kernel	# without distribution kernel
 %bcond_without	userspace	# without userspace package
 %bcond_with	verbose		# verbose build (V=1)
-
-%if %{without kernel}
-%undefine	with_dist_kernel
-%endif
 
 # The goal here is to have main, userspace, package built once with
 # simple release number, and only rebuild kernel packages with kernel
@@ -92,7 +87,7 @@ Requires:	libicu
 Obsoletes:	kernel-misc-pvscsi
 Obsoletes:	kernel-misc-vmmemctl
 %endif
-%{?with_dist_kernel:%{expand:%kbrs}}
+%{?with_kernel:%{expand:%kbrs}}
 ExclusiveArch:	%{ix86} %{x8664}
 BuildRoot:	%{tmpdir}/%{pname}-%{version}-root-%(id -u -n)
 
@@ -147,10 +142,8 @@ Release:	%{rel}@%{_kernel_ver_str}\
 Group:		Base/Kernel\
 Requires(post,postun):	/sbin/depmod\
 Requires:	dev >= 2.9.0-7\
-%if %{with dist_kernel}\
 %requires_releq_kernel\
 Requires(postun):	%releq_kernel\
-%endif\
 \
 %description -n kernel%{_alt_kernel}-misc-vmblock\
 VMware vmblock Linux kernel module.\
@@ -165,10 +158,8 @@ Release:	%{rel}@%{_kernel_ver_str}\
 Group:		Base/Kernel\
 Requires(post,postun):	/sbin/depmod\
 Requires:	dev >= 2.9.0-7\
-%if %{with dist_kernel}\
 %requires_releq_kernel\
 Requires(postun):	%releq_kernel\
-%endif\
 \
 %description -n kernel%{_alt_kernel}-misc-vmci\
 VMware vmci Linux kernel module.\
@@ -183,10 +174,8 @@ Release:	%{rel}@%{_kernel_ver_str}\
 Group:		Base/Kernel\
 Requires(post,postun):	/sbin/depmod\
 Requires:	dev >= 2.9.0-7\
-%if %{with dist_kernel}\
 %requires_releq_kernel\
 Requires(postun):	%releq_kernel\
-%endif\
 \
 %description -n kernel%{_alt_kernel}-misc-vmhgfs\
 VMware vmhgfs Linux kernel module.\
@@ -201,10 +190,8 @@ Release:	%{rel}@%{_kernel_ver_str}\
 Group:		Base/Kernel\
 Requires(post,postun):	/sbin/depmod\
 Requires:	dev >= 2.9.0-7\
-%if %{with dist_kernel}\
 %requires_releq_kernel\
 Requires(postun):	%releq_kernel\
-%endif\
 \
 %description -n kernel%{_alt_kernel}-misc-vmsync\
 VMware vmsync Linux kernel module.\
@@ -219,10 +206,8 @@ Release:	%{rel}@%{_kernel_ver_str}\
 Group:		Base/Kernel\
 Requires(post,postun):	/sbin/depmod\
 Requires:	dev >= 2.9.0-7\
-%if %{with dist_kernel}\
 %requires_releq_kernel\
 Requires(postun):	%releq_kernel\
-%endif\
 \
 %description -n kernel%{_alt_kernel}-misc-vmxnet\
 VMware vmxnet Linux kernel module.\
@@ -237,10 +222,8 @@ Release:	%{rel}@%{_kernel_ver_str}\
 Group:		Base/Kernel\
 Requires(post,postun):	/sbin/depmod\
 Requires:	dev >= 2.9.0-7\
-%if %{with dist_kernel}\
 %requires_releq_kernel\
 Requires(postun):	%releq_kernel\
-%endif\
 \
 %description -n kernel%{_alt_kernel}-misc-vsock\
 VMware vsock Linux kernel module.\
