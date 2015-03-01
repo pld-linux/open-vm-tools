@@ -78,7 +78,7 @@ Obsoletes:	kernel-misc-pvscsi
 Obsoletes:	kernel-misc-vmmemctl
 %endif
 %{?with_kernel:%{expand:%buildrequires_kernel kernel%%{_alt_kernel}-module-build >= 3:2.6.20.2}}
-ExclusiveArch:	%{ix86} %{x8664} x32
+ExclusiveArch:	%{ix86} %{x8664} %{?with_kernel:x32}
 BuildRoot:	%{tmpdir}/%{pname}-%{version}-root-%(id -u -n)
 
 %description
