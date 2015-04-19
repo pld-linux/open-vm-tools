@@ -4,10 +4,10 @@
                             p,
  #endif
                             &inode->i_dentry,
-+#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 18, 3) && LINUX_VERSION_CODE >= KERNEL_VERSION(3, 4, 107)
-                            d_alias) {
-+#else
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 18, 3)) || ((LINUX_VERSION_CODE >= KERNEL_VERSION(3, 4, 107)) && (LINUX_VERSION_CODE < KERNEL_VERSION(3, 5, 0)))
 +                           d_u.d_alias) {
++#else
+                            d_alias) {
 +#endif
           int dcount = compat_d_count(dentry);
           if (dcount) {
@@ -16,10 +16,10 @@
        /* Find a dentry with valid d_count. Refer bug 587879. */
        list_for_each(pos, &inode->i_dentry) {
           int dcount;
-+#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 18, 3) && LINUX_VERSION_CODE >= KERNEL_VERSION(3, 4, 107)
-          struct dentry *dentry = list_entry(pos, struct dentry, d_alias);
-+#else
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 18, 3)) || ((LINUX_VERSION_CODE >= KERNEL_VERSION(3, 4, 107)) && (LINUX_VERSION_CODE < KERNEL_VERSION(3, 5, 0)))
 +         struct dentry *dentry = list_entry(pos, struct dentry, d_u.d_alias);
++#else
+          struct dentry *dentry = list_entry(pos, struct dentry, d_alias);
 +#endif
           dcount = compat_d_count(dentry);
           if (dcount) {
