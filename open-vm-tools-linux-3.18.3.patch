@@ -4,7 +4,7 @@
                             p,
  #endif
                             &inode->i_dentry,
-+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 18, 3)) || ((LINUX_VERSION_CODE >= KERNEL_VERSION(3, 4, 107)) && (LINUX_VERSION_CODE < KERNEL_VERSION(3, 5, 0)))
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 18, 3)) || ((LINUX_VERSION_CODE >= KERNEL_VERSION(3, 4, 107)) && (LINUX_VERSION_CODE < KERNEL_VERSION(3, 5, 0))) || ((LINUX_VERSION_CODE >= KERNEL_VERSION(3, 14, 40)) && (LINUX_VERSION_CODE < KERNEL_VERSION(3, 15, 0)))
 +                           d_u.d_alias) {
 +#else
                             d_alias) {
@@ -16,7 +16,7 @@
        /* Find a dentry with valid d_count. Refer bug 587879. */
        list_for_each(pos, &inode->i_dentry) {
           int dcount;
-+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 18, 3)) || ((LINUX_VERSION_CODE >= KERNEL_VERSION(3, 4, 107)) && (LINUX_VERSION_CODE < KERNEL_VERSION(3, 5, 0)))
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 18, 3)) || ((LINUX_VERSION_CODE >= KERNEL_VERSION(3, 4, 107)) && (LINUX_VERSION_CODE < KERNEL_VERSION(3, 5, 0))) || ((LINUX_VERSION_CODE >= KERNEL_VERSION(3, 14, 40)) && (LINUX_VERSION_CODE < KERNEL_VERSION(3, 15, 0)))
 +         struct dentry *dentry = list_entry(pos, struct dentry, d_u.d_alias);
 +#else
           struct dentry *dentry = list_entry(pos, struct dentry, d_alias);
