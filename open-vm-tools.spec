@@ -22,7 +22,7 @@ exit 1
 %define		subver	%(echo %{snap} | tr -d .)
 %define		ver     9.4.6
 %define		rev     1770165
-%define		rel	12
+%define		rel	13
 %define		pname	open-vm-tools
 %define		modsrc	modules/linux
 Summary:	VMWare guest utilities
@@ -47,6 +47,7 @@ Patch3:		%{pname}-linux-3.14.patch
 Patch4:		%{pname}-linux-3.15.patch
 Patch5:		%{pname}-linux-3.16.patch
 Patch6:		%{pname}-linux-3.18.3.patch
+Patch7:		gcc5.patch
 URL:		http://open-vm-tools.sourceforge.net/
 BuildRequires:	rpmbuild(macros) >= 1.701
 %if %{with userspace}
@@ -291,14 +292,13 @@ export OVT_SOURCE_DIR=$PWD\
 %prep
 #setup -q -n %{pname}-%{snap}-%{rev}
 %setup -q -n %{pname}-%{ver}-%{rev}
-%if %{with kernel}
 %patch0 -p1
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
-%endif
+%patch7 -p1
 
 cp %{SOURCE1} packaging
 %{__sed} -i -e 's|##{BUILD_OUTPUT}##|build|' docs/api/doxygen.conf
@@ -317,7 +317,8 @@ export CUSTOM_PROCPS_NAME=procps
 %configure2_13 \
 	--without-kernel-modules
 %{__make} \
-	CFLAGS="%{rpmcflags} -Wno-unused-but-set-variable"
+	CFLAGS="%{rpmcflags} -Wno-unused-but-set-variable" \
+	CXXFLAGS="%{rpmcxxflags} -std=c++11 -Wno-unused-but-set-variable"
 %endif
 
 %install
