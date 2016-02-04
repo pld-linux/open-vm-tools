@@ -1,8 +1,10 @@
 #
 # Conditional build:
+%bcond_without	apidocs		# without API docs
 %bcond_without	kernel		# without kernel modules
 %bcond_without	userspace	# without userspace package
 %bcond_with	verbose		# verbose build (V=1)
+%bcond_with	x		# build with X11 support
 
 # The goal here is to have main, userspace, package built once with
 # simple release number, and only rebuild kernel packages with kernel
@@ -22,7 +24,7 @@ exit 1
 %define		subver	%(echo %{snap} | tr -d .)
 %define		ver     9.4.6
 %define		rev     1770165
-%define		rel	13
+%define		rel	14
 %define		pname	open-vm-tools
 %define		modsrc	modules/linux
 Summary:	VMWare guest utilities
@@ -54,8 +56,10 @@ BuildRequires:	rpmbuild(macros) >= 1.701
 BuildRequires:	autoconf
 BuildRequires:	doxygen
 BuildRequires:	glib2-devel >= 2.6.0
+%if %{with x}
 BuildRequires:	gtk+2-devel
 BuildRequires:	gtkmm-devel >= 2.4.0
+%endif
 BuildRequires:	libdnet-devel
 BuildRequires:	libfuse-devel
 BuildRequires:	libicu-devel
@@ -66,12 +70,14 @@ BuildRequires:	pam-devel
 BuildRequires:	pkgconfig
 BuildRequires:	procps-devel >= 1:3.3.3-2
 BuildRequires:	uriparser-devel
+%if %{with x}
 BuildRequires:	xorg-lib-libSM-devel
 BuildRequires:	xorg-lib-libX11-devel
 BuildRequires:	xorg-lib-libXScrnSaver-devel
 BuildRequires:	xorg-lib-libXinerama-devel
 BuildRequires:	xorg-lib-libXrandr-devel
 BuildRequires:	xorg-lib-libXtst-devel
+%endif
 Requires:	ethtool
 Requires:	libdnet
 Requires:	libicu
@@ -124,6 +130,18 @@ VMWare guest utilities. This package contains GUI part of tools.
 %description gui -l pl.UTF-8
 Narzędzia dla systemu-gościa dla VMware. Ten pakiet zawiera graficzną
 część narzędzi.
+
+%package apidocs
+Summary:	VMware API documentation
+Summary(pl.UTF-8):	Dokumentacja do API VMware
+Group:		Documentation
+Requires:	%{pname} = %{epoch}:%{version}-%{release}
+
+%description apidocs
+This package contains VMware API documentation.
+
+%description apidocs -l pl.UTF-8
+Ten pakiet zawiera dokumentację do API VMware.
 
 %define	kernel_pkg()\
 %package -n kernel%{_alt_kernel}-misc-vmblock\
@@ -315,7 +333,12 @@ install -d config
 %{__autoconf}
 export CUSTOM_PROCPS_NAME=procps
 %configure2_13 \
-	--without-kernel-modules
+	--without-kernel-modules \
+%if %{with x}
+	--with-x
+%else
+	--without-x
+%endif
 %{__make} \
 	CFLAGS="%{rpmcflags} -Wno-unused-but-set-variable" \
 	CXXFLAGS="%{rpmcxxflags} -std=c++11 -Wno-unused-but-set-variable"
@@ -336,6 +359,10 @@ cp -a installed/* $RPM_BUILD_ROOT
 rm $RPM_BUILD_ROOT/sbin/mount.vmhgfs
 ln -sf %{_sbindir}/mount.vmhgfs $RPM_BUILD_ROOT/sbin/mount.vmhgfs
 rm -f $RPM_BUILD_ROOT%{_libdir}/open-vm-tools/plugins/common/*.la
+
+#mkdir -p docs/%{name}-%{version}/api
+#mv docs/api/build/html docs/%{name}-%{version}/api
+%{__rm} -r $RPM_BUILD_ROOT/usr/share/doc/%{pname}
 
 install -d $RPM_BUILD_ROOT/etc/{modprobe.d,rc.d/init.d,xdg/autostart}
 cp %{SOURCE2} $RPM_BUILD_ROOT/etc/modprobe.d/%{pname}.conf
@@ -376,7 +403,9 @@ fi
 %attr(755,root,root) %{_bindir}/vmware-hgfsclient
 %attr(755,root,root) %{_bindir}/vmware-rpctool
 %attr(755,root,root) %{_bindir}/vmware-toolbox-cmd
+%if %{with x}
 %attr(4755,root,root) %{_bindir}/vmware-user-suid-wrapper
+%endif
 %attr(755,root,root) %{_bindir}/vmware-xferlogs
 %attr(755,root,root) %{_bindir}/vmware-vmblock-fuse
 %attr(755,root,root) %{_sbindir}/mount.vmhgfs
@@ -396,10 +425,12 @@ fi
 %dir %{_libdir}/open-vm-tools/plugins/common
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/common/libhgfsServer.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/common/libvix.so
+%if %{with x}
 %dir %{_libdir}/open-vm-tools/plugins/vmusr
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libdesktopEvents.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libdndcp.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libresolutionSet.so
+%endif
 %attr(754,root,root) /etc/rc.d/init.d/%{pname}
 /etc/modprobe.d/%{pname}.conf
 %dir %{_datadir}/open-vm-tools
@@ -433,4 +464,10 @@ fi
 %files gui
 %defattr(644,root,root,755)
 %{_sysconfdir}/xdg/autostart/vmware-user.desktop
+
+%if %{with apidocs}
+%files apidocs
+%defattr(644,root,root,755)
+%doc docs/api/build/html/*
+%endif
 %endif
