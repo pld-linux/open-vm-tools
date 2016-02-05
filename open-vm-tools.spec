@@ -136,6 +136,9 @@ Summary:	VMware API documentation
 Summary(pl.UTF-8):	Dokumentacja do API VMware
 Group:		Documentation
 Requires:	%{pname} = %{epoch}:%{version}-%{release}
+%if "%{_rpmversion}" >= "5"
+BuildArch:	noarch
+%endif
 
 %description apidocs
 This package contains VMware API documentation.
