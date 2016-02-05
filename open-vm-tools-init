@@ -10,7 +10,6 @@
 
 # Source function library.
 . /etc/rc.d/init.d/functions
-set -x
 
 RETVAL=0
 kver=`uname -r`
