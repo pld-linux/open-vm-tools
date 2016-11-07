@@ -1,58 +1,26 @@
 #
 # Conditional build:
 %bcond_without	apidocs		# without API docs
-%bcond_without	kernel		# without kernel modules
-%bcond_without	userspace	# without userspace package
-%bcond_with	verbose		# verbose build (V=1)
-%bcond_with	x		# build with X11 support
+%bcond_without	x		# build with X11 support
 
-# The goal here is to have main, userspace, package built once with
-# simple release number, and only rebuild kernel packages with kernel
-# version as part of release number, without the need to bump release
-# with every kernel change.
-%if 0%{?_pld_builder:1} && %{with kernel} && %{with userspace}
-%{error:kernel and userspace cannot be built at the same time on PLD builders}
-exit 1
-%endif
-
-%if %{without userspace}
-# nothing to be placed to debuginfo package
-%define		_enable_debug_packages	0
-%endif
-
-%define		snap    2011.10.26
-%define		subver	%(echo %{snap} | tr -d .)
-%define		ver     9.4.6
-%define		rev     1770165
-%define		rel	16
-%define		pname	open-vm-tools
-%define		modsrc	modules/linux
 Summary:	VMWare guest utilities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware
-Name:		%{pname}%{?_pld_builder:%{?with_kernel:-kernel}}%{_alt_kernel}
-Version:	%{ver}
-#Release:	0.%{subver}.%{rel}%{?with_kernel:@%{_kernel_ver_str}}
-Release:	%{rel}%{?_pld_builder:%{?with_kernel:@%{_kernel_ver_str}}}
+Name:		open-vm-tools
+Version:	10.0.7
+Release:	1
 Epoch:		1
 License:	GPL
 Group:		Applications/System
-Source0:	http://downloads.sourceforge.net/project/open-vm-tools/open-vm-tools/stable-9.4.x/%{pname}-%{ver}-%{rev}.tar.gz
-# Source0-md5:	3969daf1535d34e1c5f0c87a779b7642
-#Source0:	http://downloads.sourceforge.net/open-vm-tools/open-vm-tools/%{snap}/%{pname}-%{snap}-%{rev}.tar.gz
-Source1:	%{pname}-packaging
-Source2:	%{pname}-modprobe.d
-Source3:	%{pname}-init
-Source4:	%{pname}-vmware-user.desktop
-Patch0:		%{pname}-linux-3.10.patch
-Patch2:		%{pname}-linux-3.12.patch
-Patch3:		%{pname}-linux-3.14.patch
-Patch4:		%{pname}-linux-3.15.patch
-Patch5:		%{pname}-linux-3.16.patch
-Patch6:		%{pname}-linux-3.18.3.patch
-Patch7:		gcc5.patch
+Source0:	https://github.com/vmware/open-vm-tools/archive/stable-%{version}.tar.gz
+# Source0-md5:	f865c9cfc9732360f6e1b08cdbd16483
+Source1:	%{name}-packaging
+Source2:	%{name}-modprobe.d
+Source3:	%{name}-init
+Source4:	%{name}-vmware-user.desktop
+Source5:	vmware-vmblock-fuse.service
+Patch0:		%{name}-dnd.patch
 URL:		http://open-vm-tools.sourceforge.net/
 BuildRequires:	rpmbuild(macros) >= 1.701
-%if %{with userspace}
 BuildRequires:	autoconf
 BuildRequires:	doxygen
 BuildRequires:	glib2-devel >= 2.6.0
@@ -81,12 +49,10 @@ BuildRequires:	xorg-lib-libXtst-devel
 Requires:	ethtool
 Requires:	libdnet
 Requires:	libicu
-Obsoletes:	kernel-misc-pvscsi
-Obsoletes:	kernel-misc-vmmemctl
-%endif
-%{?with_kernel:%{expand:%buildrequires_kernel kernel%%{_alt_kernel}-module-build >= 3:2.6.20.2}}
-ExclusiveArch:	%{ix86} %{x8664} %{?with_kernel:x32}
-BuildRoot:	%{tmpdir}/%{pname}-%{version}-root-%(id -u -n)
+ExclusiveArch:	%{ix86} %{x8664}
+BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
+
+%define		skip_post_check_so	libDeployPkg.so.0.0.0
 
 %description
 VMWare guest utilities.
@@ -98,7 +64,7 @@ Narzędzia dla systemu-gościa dla VMware.
 Summary:	Header files for open-vm-tools
 Summary(pl.UTF-8):	Pliki nagłówkowe open-vm-tools
 Group:		Development/Libraries
-Requires:	%{pname} = %{epoch}:%{version}-%{release}
+Requires:	%{name} = %{epoch}:%{version}-%{release}
 
 %description devel
 Header files for open-vm-tools.
@@ -110,7 +76,7 @@ Pliki nagłówkowe open-vm-tools.
 Summary:	Static open-vm-tools libraries
 Summary(pl.UTF-8):	Statyczne biblioteki open-vm-tools
 Group:		Development/Libraries
-Requires:	%{pname}-devel = %{epoch}:%{version}-%{release}
+Requires:	%{name}-devel = %{epoch}:%{version}-%{release}
 
 %description static
 Static open-vm-tools libraries.
@@ -122,7 +88,7 @@ Statyczne biblioteki open-vm-tools.
 Summary:	VMware guest utitities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware.
 Group:		Applications/System
-Requires:	%{pname} = %{epoch}:%{version}-%{release}
+Requires:	%{name} = %{epoch}:%{version}-%{release}
 
 %description gui
 VMWare guest utilities. This package contains GUI part of tools.
@@ -135,7 +101,7 @@ część narzędzi.
 Summary:	VMware API documentation
 Summary(pl.UTF-8):	Dokumentacja do API VMware
 Group:		Documentation
-Requires:	%{pname} = %{epoch}:%{version}-%{release}
+Requires:	%{name} = %{epoch}:%{version}-%{release}
 %if "%{_rpmversion}" >= "5"
 BuildArch:	noarch
 %endif
@@ -146,188 +112,14 @@ This package contains VMware API documentation.
 %description apidocs -l pl.UTF-8
 Ten pakiet zawiera dokumentację do API VMware.
 
-%define	kernel_pkg()\
-%package -n kernel%{_alt_kernel}-misc-vmblock\
-Summary:	VMware vmblock Linux kernel module\
-Summary(pl.UTF-8):	Moduł jądra Linuksa VMware vmblock\
-Release:	%{rel}@%{_kernel_ver_str}\
-Group:		Base/Kernel\
-Requires(post,postun):	/sbin/depmod\
-Requires:	dev >= 2.9.0-7\
-%requires_releq_kernel\
-Requires(postun):	%releq_kernel\
-\
-%description -n kernel%{_alt_kernel}-misc-vmblock\
-VMware vmblock Linux kernel module.\
-\
-%description -n kernel%{_alt_kernel}-misc-vmblock -l pl.UTF-8\
-Moduł jądra Linuksa VMware vmblock.\
-\
-%package -n kernel%{_alt_kernel}-misc-vmci\
-Summary:	VMware vmci Linux kernel module\
-Summary(pl.UTF-8):	Moduł jądra Linuksa VMware vmci\
-Release:	%{rel}@%{_kernel_ver_str}\
-Group:		Base/Kernel\
-Requires(post,postun):	/sbin/depmod\
-Requires:	dev >= 2.9.0-7\
-%requires_releq_kernel\
-Requires(postun):	%releq_kernel\
-\
-%description -n kernel%{_alt_kernel}-misc-vmci\
-VMware vmci Linux kernel module.\
-\
-%description -n kernel%{_alt_kernel}-misc-vmci -l pl.UTF-8\
-Moduł jądra Linuksa VMware vmci.\
-\
-%package -n kernel%{_alt_kernel}-misc-vmhgfs\
-Summary:	VMware vmhgfs Linux kernel module\
-Summary(pl.UTF-8):	Moduł jądra Linuksa VMware vmhgfs\
-Release:	%{rel}@%{_kernel_ver_str}\
-Group:		Base/Kernel\
-Requires(post,postun):	/sbin/depmod\
-Requires:	dev >= 2.9.0-7\
-%requires_releq_kernel\
-Requires(postun):	%releq_kernel\
-\
-%description -n kernel%{_alt_kernel}-misc-vmhgfs\
-VMware vmhgfs Linux kernel module.\
-\
-%description -n kernel%{_alt_kernel}-misc-vmhgfs -l pl.UTF-8\
-Moduł jądra Linuksa VMware vmhgfs.\
-\
-%package -n kernel%{_alt_kernel}-misc-vmsync\
-Summary:	VMware vmsync Linux kernel module\
-Summary(pl.UTF-8):	Moduł jądra Linuksa VMware vmsync\
-Release:	%{rel}@%{_kernel_ver_str}\
-Group:		Base/Kernel\
-Requires(post,postun):	/sbin/depmod\
-Requires:	dev >= 2.9.0-7\
-%requires_releq_kernel\
-Requires(postun):	%releq_kernel\
-\
-%description -n kernel%{_alt_kernel}-misc-vmsync\
-VMware vmsync Linux kernel module.\
-\
-%description -n kernel%{_alt_kernel}-misc-vmsync -l pl.UTF-8\
-Moduł jądra Linuksa VMware vmsync.\
-\
-%package -n kernel%{_alt_kernel}-misc-vmxnet\
-Summary:	VMware vmxnet Linux kernel module\
-Summary(pl.UTF-8):	Moduł jądra Linuksa VMware vmxnet\
-Release:	%{rel}@%{_kernel_ver_str}\
-Group:		Base/Kernel\
-Requires(post,postun):	/sbin/depmod\
-Requires:	dev >= 2.9.0-7\
-%requires_releq_kernel\
-Requires(postun):	%releq_kernel\
-\
-%description -n kernel%{_alt_kernel}-misc-vmxnet\
-VMware vmxnet Linux kernel module.\
-\
-%description -n kernel%{_alt_kernel}-misc-vmxnet -l pl.UTF-8\
-Moduł jądra Linuksa VMware vmxnet.\
-\
-%package -n kernel%{_alt_kernel}-misc-vsock\
-Summary:	VMware vsock Linux kernel module\
-Summary(pl.UTF-8):	Moduł jądra Linuksa VMware vsock\
-Release:	%{rel}@%{_kernel_ver_str}\
-Group:		Base/Kernel\
-Requires(post,postun):	/sbin/depmod\
-Requires:	dev >= 2.9.0-7\
-%requires_releq_kernel\
-Requires(postun):	%releq_kernel\
-\
-%description -n kernel%{_alt_kernel}-misc-vsock\
-VMware vsock Linux kernel module.\
-\
-%description -n kernel%{_alt_kernel}-misc-vsock -l pl.UTF-8\
-Moduł jądra Linuksa VMware vsock.\
-\
-%if %{with kernel}\
-%files -n kernel%{_alt_kernel}-misc-vmblock\
-%defattr(644,root,root,755)\
-/lib/modules/%{_kernel_ver}/misc/vmblock.ko*\
-\
-%files -n kernel%{_alt_kernel}-misc-vmhgfs\
-%defattr(644,root,root,755)\
-/lib/modules/%{_kernel_ver}/misc/vmhgfs.ko*\
-\
-%if %{_kernel_version_code} < %{_kernel_version_magic 3 10 0}\
-%files -n kernel%{_alt_kernel}-misc-vmci\
-%defattr(644,root,root,755)\
-/lib/modules/%{_kernel_ver}/misc/vmci.ko*\
-\
-%files -n kernel%{_alt_kernel}-misc-vmsync\
-%defattr(644,root,root,755)\
-/lib/modules/%{_kernel_ver}/misc/vmsync.ko*\
-%endif\
-\
-%files -n kernel%{_alt_kernel}-misc-vmxnet\
-%defattr(644,root,root,755)\
-/lib/modules/%{_kernel_ver}/misc/vmxnet.ko*\
-\
-%files -n kernel%{_alt_kernel}-misc-vsock\
-%defattr(644,root,root,755)\
-/lib/modules/%{_kernel_ver}/misc/vsock.ko*\
-%endif\
-\
-%post	-n kernel%{_alt_kernel}-misc-vmblock\
-%depmod %{_kernel_ver}\
-\
-%post	-n kernel%{_alt_kernel}-misc-vmci\
-%depmod %{_kernel_ver}\
-\
-%post	-n kernel%{_alt_kernel}-misc-vmhgfs\
-%depmod %{_kernel_ver}\
-\
-%post	-n kernel%{_alt_kernel}-misc-vmsync\
-%depmod %{_kernel_ver}\
-\
-%post	-n kernel%{_alt_kernel}-misc-vmxnet\
-%depmod %{_kernel_ver}\
-\
-%post	-n kernel%{_alt_kernel}-misc-vsock\
-%depmod %{_kernel_ver}\
-%{nil}
-
-%define build_kernel_pkg()\
-export OVT_SOURCE_DIR=$PWD\
-%build_kernel_modules -C %{modsrc}/vmblock -m vmblock SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}\
-%build_kernel_modules -C %{modsrc}/vmhgfs -m vmhgfs SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}\
-%build_kernel_modules -C %{modsrc}/vmxnet -m vmxnet SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}\
-%build_kernel_modules -C %{modsrc}/vsock -m vsock SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}\
-%install_kernel_modules -D installed -m %{modsrc}/vmblock/vmblock -d misc\
-%install_kernel_modules -D installed -m %{modsrc}/vmhgfs/vmhgfs -d misc\
-%install_kernel_modules -D installed -m %{modsrc}/vmxnet/vmxnet -d misc\
-%install_kernel_modules -D installed -m %{modsrc}/vsock/vsock -d misc\
-%if %{_kernel_version_code} < %{_kernel_version_magic 3 10 0}\
-%build_kernel_modules -C %{modsrc}/vmci -m vmci SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}\
-%build_kernel_modules -C %{modsrc}/vmsync -m vmsync SRCROOT=$PWD VM_KBUILD=26 VM_CCVER=%{cc_version}\
-%install_kernel_modules -D installed -m %{modsrc}/vmci/vmci -d misc\
-%install_kernel_modules -D installed -m %{modsrc}/vmsync/vmsync -d misc\
-%endif\
-%{nil}
-
-%{?with_kernel:%{expand:%create_kernel_packages}}
-
 %prep
-#setup -q -n %{pname}-%{snap}-%{rev}
-%setup -q -n %{pname}-%{ver}-%{rev}
+%setup -q -n %{name}-stable-%{version}
 %patch0 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-%patch7 -p1
 
-cp %{SOURCE1} packaging
-%{__sed} -i -e 's|##{BUILD_OUTPUT}##|build|' docs/api/doxygen.conf
+cp %{SOURCE1} open-vm-tools/packaging
 
 %build
-%{?with_kernel:%{expand:%build_kernel_packages}}
-
-%if %{with userspace}
+cd open-vm-tools
 rm -rf autom4te.cache
 install -d config
 %{__libtoolize}
@@ -345,17 +137,11 @@ export CUSTOM_PROCPS_NAME=procps
 %{__make} \
 	CFLAGS="%{rpmcflags} -Wno-unused-but-set-variable" \
 	CXXFLAGS="%{rpmcxxflags} -std=c++11 -Wno-unused-but-set-variable"
-%endif
 
 %install
 rm -rf $RPM_BUILD_ROOT
 
-%if %{with kernel}
-install -d $RPM_BUILD_ROOT
-cp -a installed/* $RPM_BUILD_ROOT
-%endif
-
-%if %{with userspace}
+cd open-vm-tools
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 
@@ -365,13 +151,15 @@ rm -f $RPM_BUILD_ROOT%{_libdir}/open-vm-tools/plugins/common/*.la
 
 #mkdir -p docs/%{name}-%{version}/api
 #mv docs/api/build/html docs/%{name}-%{version}/api
-%{__rm} -r $RPM_BUILD_ROOT/usr/share/doc/%{pname}
+%{__rm} -r $RPM_BUILD_ROOT/usr/share/doc/%{name}
 
 install -d $RPM_BUILD_ROOT/etc/{modprobe.d,rc.d/init.d,xdg/autostart}
-cp %{SOURCE2} $RPM_BUILD_ROOT/etc/modprobe.d/%{pname}.conf
-cp %{SOURCE3} $RPM_BUILD_ROOT/etc/rc.d/init.d/%{pname}
+cp %{SOURCE2} $RPM_BUILD_ROOT/etc/modprobe.d/%{name}.conf
+cp %{SOURCE3} $RPM_BUILD_ROOT/etc/rc.d/init.d/%{name}
 cp %{SOURCE4} $RPM_BUILD_ROOT/etc/xdg/autostart/vmware-user.desktop
-%endif
+
+install -d $RPM_BUILD_ROOT%{systemdunitdir}
+cp %{SOURCE5} $RPM_BUILD_ROOT%{systemdunitdir}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -380,40 +168,56 @@ rm -rf $RPM_BUILD_ROOT
 /sbin/ldconfig
 /sbin/chkconfig --add open-vm-tools
 %service open-vm-tools restart "Open Virtual Machine"
+%systemd_post vmware-vmblock-fuse.service
 
 %preun
 if [ "$1" = "0" ]; then
 	%service open-vm-tools stop
 	/sbin/chkconfig --del open-vm-tools
 fi
+%systemd_preun vmware-vmblock-fuse.service
+
 
 %postun -p /sbin/ldconfig
+%systemd_reload
 
-%if %{with userspace}
 %files
 %defattr(644,root,root,755)
-%doc AUTHORS ChangeLog NEWS README packaging
+%doc open-vm-tools/AUTHORS open-vm-tools/ChangeLog open-vm-tools/NEWS open-vm-tools/README open-vm-tools/packaging
 %config(noreplace) %verify(not md5 mtime size) /etc/pam.d/vmtoolsd
 %dir /etc/vmware-tools
 %attr(755,root,root) /etc/vmware-tools/*vm-*
+/etc/vmware-tools/guestproxy-ssl.conf
+/etc/vmware-tools/vgauth.conf
+%dir /etc/vmware-tools/vgauth
+/etc/vmware-tools/vgauth/schemas
 %attr(755,root,root) /etc/vmware-tools/statechange.subr
 %dir /etc/vmware-tools/scripts
 %dir /etc/vmware-tools/scripts/vmware
 %attr(755,root,root) /etc/vmware-tools/scripts/vmware/network
 %attr(755,root,root) /sbin/mount.vmhgfs
+%attr(755,root,root) %{_bindir}/VGAuthService
+%attr(755,root,root) %{_bindir}/vmhgfs-fuse
 %attr(755,root,root) %{_bindir}/vmtoolsd
 %attr(755,root,root) %{_bindir}/vmware-checkvm
+%attr(755,root,root) %{_bindir}/vmware-guestproxycerttool
 %attr(755,root,root) %{_bindir}/vmware-hgfsclient
+%attr(755,root,root) %{_bindir}/vmware-namespace-cmd
 %attr(755,root,root) %{_bindir}/vmware-rpctool
 %attr(755,root,root) %{_bindir}/vmware-toolbox-cmd
 %if %{with x}
 %attr(4755,root,root) %{_bindir}/vmware-user-suid-wrapper
 %endif
 %attr(755,root,root) %{_bindir}/vmware-xferlogs
+%attr(755,root,root) %{_bindir}/vmware-vgauth-cmd
 %attr(755,root,root) %{_bindir}/vmware-vmblock-fuse
 %attr(755,root,root) %{_sbindir}/mount.vmhgfs
+%attr(755,root,root) %{_libdir}/libDeployPkg.so.*.*.*
+%attr(755,root,root) %ghost %{_libdir}/libDeployPkg.so.0
 %attr(755,root,root) %{_libdir}/libguestlib.so.*.*.*
 %attr(755,root,root) %ghost %{_libdir}/libguestlib.so.0
+%attr(755,root,root) %{_libdir}/libvgauth.so.*.*.*
+%attr(755,root,root) %ghost %{_libdir}/libvgauth.so.0
 %attr(755,root,root) %{_libdir}/libvmtools.so.*.*.*
 %attr(755,root,root) %ghost %{_libdir}/libvmtools.so.0
 %attr(755,root,root) %{_libdir}/libhgfs.so.*.*.*
@@ -421,6 +225,8 @@ fi
 %dir %{_libdir}/open-vm-tools
 %dir %{_libdir}/open-vm-tools/plugins
 %dir %{_libdir}/open-vm-tools/plugins/vmsvc
+%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libdeployPkgPlugin.so
+%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libgrabbitmqProxy.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libguestInfo.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libpowerOps.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libtimeSync.so
@@ -434,33 +240,48 @@ fi
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libdndcp.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libresolutionSet.so
 %endif
-%attr(754,root,root) /etc/rc.d/init.d/%{pname}
-/etc/modprobe.d/%{pname}.conf
+%attr(754,root,root) /etc/rc.d/init.d/%{name}
+%{systemdunitdir}/vmware-vmblock-fuse.service
+/etc/modprobe.d/%{name}.conf
 %dir %{_datadir}/open-vm-tools
 %dir %{_datadir}/open-vm-tools/messages
 %lang(de) %{_datadir}/open-vm-tools/messages/de
+%lang(en) %{_datadir}/open-vm-tools/messages/en
+%lang(es) %{_datadir}/open-vm-tools/messages/es
+%lang(fr) %{_datadir}/open-vm-tools/messages/fr
+%lang(it) %{_datadir}/open-vm-tools/messages/it
 %lang(ja) %{_datadir}/open-vm-tools/messages/ja
 %lang(ko) %{_datadir}/open-vm-tools/messages/ko
 %lang(zh_CN) %{_datadir}/open-vm-tools/messages/zh_CN
+%lang(zh_TW) %{_datadir}/open-vm-tools/messages/zh_TW
 
 %files devel
 %defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libDeployPkg.so
 %attr(755,root,root) %{_libdir}/libguestlib.so
+%attr(755,root,root) %{_libdir}/libvgauth.so
 %attr(755,root,root) %{_libdir}/libvmtools.so
 %attr(755,root,root) %{_libdir}/libhgfs.so
+%dir %{_includedir}/libDeployPkg
+%{_includedir}/libDeployPkg/*.h
 %dir %{_includedir}/vmGuestLib
 %{_includedir}/vmGuestLib/includeCheck.h
 %{_includedir}/vmGuestLib/vmGuestLib.h
 %{_includedir}/vmGuestLib/vmSessionId.h
 %{_includedir}/vmGuestLib/vm_basic_types.h
+%{_libdir}/libDeployPkg.la
 %{_libdir}/libguestlib.la
+%{_libdir}/libvgauth.la
 %{_libdir}/libvmtools.la
 %{_libdir}/libhgfs.la
+%{_pkgconfigdir}/libDeployPkg.pc
 %{_pkgconfigdir}/vmguestlib.pc
 
 %files static
 %defattr(644,root,root,755)
+%{_libdir}/libDeployPkg.a
 %{_libdir}/libguestlib.a
+%{_libdir}/libvgauth.a
 %{_libdir}/libvmtools.a
 %{_libdir}/libhgfs.a
 
@@ -471,6 +292,5 @@ fi
 %if %{with apidocs}
 %files apidocs
 %defattr(644,root,root,755)
-%doc docs/api/build/html/*
-%endif
+%doc open-vm-tools/docs/api/build/html/*
 %endif
