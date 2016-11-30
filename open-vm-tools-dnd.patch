@@ -1,0 +1,11 @@
+--- open-vm-tools-stable-10.0.7.orig/open-vm-tools/services/plugins/dndcp/Makefile.am	2016-10-27 23:47:54.876016950 +0200
++++ open-vm-tools-stable-10.0.7/open-vm-tools/services/plugins/dndcp/Makefile.am	2016-10-28 00:00:07.528761831 +0200
+@@ -18,7 +18,7 @@
+ plugindir = @VMUSR_PLUGIN_INSTALLDIR@
+ plugin_LTLIBRARIES = libdndcp.la
+ 
+-libdndcp_la_CPPFLAGS =
++libdndcp_la_CPPFLAGS = -Dvmblock_fuse
+ libdndcp_la_CPPFLAGS += @GTK_CPPFLAGS@
+ libdndcp_la_CPPFLAGS += @GTKMM_CPPFLAGS@
+ libdndcp_la_CPPFLAGS += @PLUGIN_CPPFLAGS@
