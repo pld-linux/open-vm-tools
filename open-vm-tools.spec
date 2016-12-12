@@ -38,6 +38,7 @@ BuildRequires:	pam-devel
 BuildRequires:	pkgconfig
 BuildRequires:	procps-devel >= 1:3.3.3-2
 BuildRequires:	uriparser-devel
+BuildRequires:	xml-security-c-devel
 %if %{with x}
 BuildRequires:	xorg-lib-libSM-devel
 BuildRequires:	xorg-lib-libX11-devel
