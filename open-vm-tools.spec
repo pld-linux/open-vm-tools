@@ -6,19 +6,20 @@
 Summary:	VMWare guest utilities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware
 Name:		open-vm-tools
-Version:	10.0.7
+Version:	10.1.0
 Release:	1
 Epoch:		1
 License:	GPL
 Group:		Applications/System
 Source0:	https://github.com/vmware/open-vm-tools/archive/stable-%{version}.tar.gz
-# Source0-md5:	f865c9cfc9732360f6e1b08cdbd16483
+# Source0-md5:	46f5a319275f63658f1a44b6c8755f6b
 Source1:	%{name}-packaging
 Source2:	%{name}-modprobe.d
 Source3:	%{name}-init
 Source4:	%{name}-vmware-user.desktop
 Source5:	vmware-vmblock-fuse.service
 Patch0:		%{name}-dnd.patch
+Patch1:		%{name}-configure.patch
 URL:		http://open-vm-tools.sourceforge.net/
 BuildRequires:	rpmbuild(macros) >= 1.701
 BuildRequires:	autoconf
@@ -31,6 +32,7 @@ BuildRequires:	gtkmm-devel >= 2.4.0
 BuildRequires:	libdnet-devel
 BuildRequires:	libfuse-devel
 BuildRequires:	libicu-devel
+BuildRequires:	libmspack-devel
 BuildRequires:	libnotify-devel
 BuildRequires:	libpng-devel
 BuildRequires:	libstdc++-devel
@@ -113,9 +115,23 @@ This package contains VMware API documentation.
 %description apidocs -l pl.UTF-8
 Ten pakiet zawiera dokumentację do API VMware.
 
+%package -n udev-open-vm-tools
+Summary:	UDEV rules for open-vm-tools
+Summary(pl.UTF-8):	Reguły UDEV dla open-vm-tools
+Group:		Applications/System
+Requires:	%{name} = %{epoch}:%{version}-%{release}
+Requires:	udev-core
+
+%description -n udev-open-vm-tools
+UDEV rules for open-vm-tools.
+
+%description -n udev-open-vm-tools -l pl.UTF-8
+Reguły UDEV dla open-vm-tools.
+
 %prep
 %setup -q -n %{name}-stable-%{version}
 %patch0 -p1
+%patch1 -p1
 
 cp %{SOURCE1} open-vm-tools/packaging
 
@@ -295,3 +311,7 @@ fi
 %defattr(644,root,root,755)
 %doc open-vm-tools/docs/api/build/html/*
 %endif
+
+%files -n udev-open-vm-tools
+%defattr(644,root,root,755)
+/lib/udev/rules.d/99-vmware-scsi-udev.rules

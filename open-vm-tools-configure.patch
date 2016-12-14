@@ -1,0 +1,21 @@
+--- open-vm-tools-stable-10.1.0/open-vm-tools/configure.ac.orig	2016-12-14 19:52:27.228555603 +0100
++++ open-vm-tools-stable-10.1.0/open-vm-tools/configure.ac	2016-12-14 19:52:32.282078440 +0100
+@@ -1595,7 +1595,6 @@
+    common-agent/input/invokers/Makefile \
+    common-agent/input/providerReg/Makefile \
+    common-agent/etc/Makefile           \
+-   common-agent/etc/config/Makefile    \
+    common-agent/etc/scripts/Makefile   \
+    common-agent/etc/install/Makefile   \
+    xferlogs/Makefile                   \
+--- open-vm-tools-stable-10.1.0/open-vm-tools/common-agent/etc/Makefile.am.orig	2016-12-14 19:57:06.720882094 +0100
++++ open-vm-tools-stable-10.1.0/open-vm-tools/common-agent/etc/Makefile.am	2016-12-14 19:57:12.440464943 +0100
+@@ -15,7 +15,7 @@
+ ### Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ ################################################################################
+ 
+-SUBDIRS = install config scripts
++SUBDIRS = install scripts
+ 
+ uninstall-hook:
+ 	rm -rf $(DESTDIR)/etc/vmware-caf
