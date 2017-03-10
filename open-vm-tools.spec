@@ -7,7 +7,7 @@ Summary:	VMWare guest utilities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware
 Name:		open-vm-tools
 Version:	10.1.0
-Release:	1
+Release:	2
 Epoch:		1
 License:	GPL
 Group:		Applications/System
