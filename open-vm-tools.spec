@@ -7,7 +7,7 @@ Summary:	VMWare guest utilities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware
 Name:		open-vm-tools
 Version:	10.1.5
-Release:	1
+Release:	2
 Epoch:		1
 License:	GPL
 Group:		Applications/System
@@ -21,7 +21,6 @@ Source5:	vmware-vmblock-fuse.service
 Patch0:		%{name}-dnd.patch
 Patch1:		%{name}-configure.patch
 URL:		http://open-vm-tools.sourceforge.net/
-BuildRequires:	rpmbuild(macros) >= 1.701
 BuildRequires:	autoconf
 BuildRequires:	doxygen
 BuildRequires:	glib2-devel >= 2.6.0
@@ -39,6 +38,7 @@ BuildRequires:	libstdc++-devel
 BuildRequires:	pam-devel
 BuildRequires:	pkgconfig
 BuildRequires:	procps-devel >= 1:3.3.3-2
+BuildRequires:	rpmbuild(macros) >= 1.701
 BuildRequires:	uriparser-devel
 BuildRequires:	xml-security-c-devel
 %if %{with x}
@@ -162,9 +162,9 @@ cd open-vm-tools
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 
-rm $RPM_BUILD_ROOT/sbin/mount.vmhgfs
+%{__rm} $RPM_BUILD_ROOT/sbin/mount.vmhgfs
 ln -sf %{_sbindir}/mount.vmhgfs $RPM_BUILD_ROOT/sbin/mount.vmhgfs
-rm -f $RPM_BUILD_ROOT%{_libdir}/open-vm-tools/plugins/common/*.la
+%{__rm} $RPM_BUILD_ROOT%{_libdir}/open-vm-tools/plugins/common/*.la
 
 #mkdir -p docs/%{name}-%{version}/api
 #mv docs/api/build/html docs/%{name}-%{version}/api
