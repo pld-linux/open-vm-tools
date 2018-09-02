@@ -33,41 +33,6 @@ module_exist() {
 	test -f /lib/modules/$kver/misc/$module.ko*
 }
 
-start_vmxnet() {
-	# Check if the service is already running?
-	if [ -f /var/lock/subsys/open-vm-tools-vmxnet ]; then
-		msg_already_running "Open Virtual Machine vmxnet script"
-		return
-	fi
-
-	msg_starting "Open Virtual Machine vmxnet script"
-	busy
-	if ! module_exist vmxnet; then
-		fail
-		echo -e "\tCan't find vmxnet module"
-		RETVAL=1
-		return
-	fi
-
-	for ethif in `ifconfig -a | grep ^eth | cut -d' ' -f1`; do
-		/sbin/ethtool -K $ethif tso on > /dev/null 2>&1
-	done
-	ok
-	touch /var/lock/subsys/open-vm-tools-vmxnet
-}
-
-stop_vmxnet() {
-	if [ ! -f /var/lock/subsys/open-vm-tools-vmxnet ]; then
-		msg_not_running "Open Virtual Machine vmxnet script"
-		return
-	fi
-
-	msg_stopping "Open Virtual Machine vmxnet script"
-	busy
-	rm -f /var/lock/subsys/open-vm-tools-vmxnet
-	ok
-}
-
 start_vmblock() {
 	# vmblock is not required and unsupported on ESX so first check
 	# if it's installed then try to use
@@ -169,7 +134,6 @@ stop_vmsync() {
 }
 
 start() {
-	start_vmxnet
 	if is_no `is_ESX_running`; then
 		start_vmblock
 		start_vmhgfs
@@ -182,7 +146,6 @@ start() {
 }
 
 stop() {
-	stop_vmxnet
 	stop_vmblock
 	stop_vmhgfs
 	stop_vmsync
