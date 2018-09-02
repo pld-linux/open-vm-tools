@@ -6,13 +6,13 @@
 Summary:	VMWare guest utilities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware
 Name:		open-vm-tools
-Version:	10.1.5
-Release:	2
+Version:	10.3.0
+Release:	1
 Epoch:		1
 License:	GPL
 Group:		Applications/System
 Source0:	https://github.com/vmware/open-vm-tools/archive/stable-%{version}.tar.gz
-# Source0-md5:	0874d044811d4c290098dd3898fc8c1e
+# Source0-md5:	7b16e339d3aeec9c5b97ce825071105d
 Source1:	%{name}-packaging
 Source2:	%{name}-modprobe.d
 Source3:	%{name}-init
@@ -20,13 +20,13 @@ Source4:	%{name}-vmware-user.desktop
 Source5:	vmware-vmblock-fuse.service
 Patch0:		%{name}-dnd.patch
 Patch1:		%{name}-configure.patch
-URL:		http://open-vm-tools.sourceforge.net/
+URL:		https://github.com/vmware/open-vm-tools
 BuildRequires:	autoconf
 BuildRequires:	doxygen
-BuildRequires:	glib2-devel >= 2.6.0
+BuildRequires:	glib2-devel >= 2.34.0
 %if %{with x}
-BuildRequires:	gtk+2-devel
-BuildRequires:	gtkmm-devel >= 2.4.0
+BuildRequires:	gtk+3-devel >= 3.0.0
+BuildRequires:	gtkmm3-devel >= 3.0.0
 %endif
 BuildRequires:	libdnet-devel
 BuildRequires:	libfuse-devel
@@ -40,6 +40,7 @@ BuildRequires:	pkgconfig
 BuildRequires:	procps-devel >= 1:3.3.3-2
 BuildRequires:	rpmbuild(macros) >= 1.701
 BuildRequires:	uriparser-devel
+BuildRequires:	xmlsec1-devel
 BuildRequires:	xml-security-c-devel
 %if %{with x}
 BuildRequires:	xorg-lib-libSM-devel
@@ -222,9 +223,6 @@ fi
 %attr(755,root,root) %{_bindir}/vmware-namespace-cmd
 %attr(755,root,root) %{_bindir}/vmware-rpctool
 %attr(755,root,root) %{_bindir}/vmware-toolbox-cmd
-%if %{with x}
-%attr(4755,root,root) %{_bindir}/vmware-user-suid-wrapper
-%endif
 %attr(755,root,root) %{_bindir}/vmware-xferlogs
 %attr(755,root,root) %{_bindir}/vmware-vgauth-cmd
 %attr(755,root,root) %{_bindir}/vmware-vmblock-fuse
@@ -246,17 +244,12 @@ fi
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libgrabbitmqProxy.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libguestInfo.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libpowerOps.so
+%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libresolutionKMS.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libtimeSync.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libvmbackup.so
 %dir %{_libdir}/open-vm-tools/plugins/common
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/common/libhgfsServer.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/common/libvix.so
-%if %{with x}
-%dir %{_libdir}/open-vm-tools/plugins/vmusr
-%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libdesktopEvents.so
-%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libdndcp.so
-%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libresolutionSet.so
-%endif
 %attr(754,root,root) /etc/rc.d/init.d/%{name}
 %{systemdunitdir}/vmware-vmblock-fuse.service
 /etc/modprobe.d/%{name}.conf
@@ -302,9 +295,17 @@ fi
 %{_libdir}/libvmtools.a
 %{_libdir}/libhgfs.a
 
+%if %{with x}
 %files gui
 %defattr(644,root,root,755)
+%attr(755,root,root) %{_bindir}/vmware-user
+%attr(4755,root,root) %{_bindir}/vmware-user-suid-wrapper
 %{_sysconfdir}/xdg/autostart/vmware-user.desktop
+%dir %{_libdir}/open-vm-tools/plugins/vmusr
+%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libdesktopEvents.so
+%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libdndcp.so
+%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libresolutionSet.so
+%endif
 
 %if %{with apidocs}
 %files apidocs
