@@ -1,3 +1,8 @@
+# TODO
+# - unpackaged files:
+#        /usr/bin/vmware-vgauth-smoketest
+#        /usr/share/open-vm-tools/tests/libtestDebug.so
+#        /usr/share/open-vm-tools/tests/libtestPlugin.so
 #
 # Conditional build:
 %bcond_without	apidocs		# without API docs
