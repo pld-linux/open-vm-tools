@@ -7,7 +7,7 @@ Summary:	VMWare guest utilities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware
 Name:		open-vm-tools
 Version:	10.3.0
-Release:	1
+Release:	2
 Epoch:		1
 License:	GPL
 Group:		Applications/System
@@ -18,6 +18,7 @@ Source2:	%{name}-modprobe.d
 Source3:	%{name}-init
 Source4:	%{name}-vmware-user.desktop
 Source5:	vmware-vmblock-fuse.service
+Source6:	vmtoolsd.pamd
 Patch0:		%{name}-dnd.patch
 Patch1:		%{name}-configure.patch
 URL:		https://github.com/vmware/open-vm-tools
@@ -175,6 +176,7 @@ install -d $RPM_BUILD_ROOT/etc/{modprobe.d,rc.d/init.d,xdg/autostart}
 cp %{SOURCE2} $RPM_BUILD_ROOT/etc/modprobe.d/%{name}.conf
 cp %{SOURCE3} $RPM_BUILD_ROOT/etc/rc.d/init.d/%{name}
 cp %{SOURCE4} $RPM_BUILD_ROOT/etc/xdg/autostart/vmware-user.desktop
+cp %{SOURCE6} $RPM_BUILD_ROOT/etc/pam.d/vmtoolsd
 
 install -d $RPM_BUILD_ROOT%{systemdunitdir}
 cp %{SOURCE5} $RPM_BUILD_ROOT%{systemdunitdir}
