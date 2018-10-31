@@ -139,7 +139,7 @@ start() {
 		start_vmhgfs
 	fi
 	_modprobe single vmware_vmmemctl
-	_modprobe single vmci
+	_modprobe single vmw_vmci
 	_modprobe single vsock
 	start_vmsync
 }
