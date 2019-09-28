@@ -11,13 +11,13 @@
 Summary:	VMWare guest utilities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware
 Name:		open-vm-tools
-Version:	10.3.10
-Release:	2
+Version:	11.0.0
+Release:	1
 Epoch:		1
 License:	GPL
 Group:		Applications/System
 Source0:	https://github.com/vmware/open-vm-tools/archive/stable-%{version}.tar.gz
-# Source0-md5:	5766a9f1491c64af57c7abae53365cb7
+# Source0-md5:	c8d0c46a7b1e9fa24d0eba2e67d49fa0
 Source1:	%{name}-packaging
 Source2:	%{name}-modprobe.d
 Source3:	%{name}-init
@@ -25,7 +25,6 @@ Source4:	%{name}-vmware-user.desktop
 Source5:	vmware-vmblock-fuse.service
 Source6:	vmtoolsd.pamd
 Patch0:		%{name}-dnd.patch
-Patch1:		%{name}-configure.patch
 URL:		https://github.com/vmware/open-vm-tools
 BuildRequires:	autoconf
 BuildRequires:	doxygen
@@ -138,7 +137,6 @@ Reguły UDEV dla open-vm-tools.
 %prep
 %setup -q -n %{name}-stable-%{version}
 %patch0 -p1
-%patch1 -p1
 
 cp %{SOURCE1} open-vm-tools/packaging
 
@@ -212,7 +210,7 @@ fi
 %config(noreplace) %verify(not md5 mtime size) /etc/pam.d/vmtoolsd
 %dir /etc/vmware-tools
 %attr(755,root,root) /etc/vmware-tools/*vm-*
-/etc/vmware-tools/guestproxy-ssl.conf
+/etc/vmware-tools/tools.conf.example
 /etc/vmware-tools/vgauth.conf
 %dir /etc/vmware-tools/vgauth
 /etc/vmware-tools/vgauth/schemas
@@ -225,7 +223,6 @@ fi
 %attr(755,root,root) %{_bindir}/vmhgfs-fuse
 %attr(755,root,root) %{_bindir}/vmtoolsd
 %attr(755,root,root) %{_bindir}/vmware-checkvm
-%attr(755,root,root) %{_bindir}/vmware-guestproxycerttool
 %attr(755,root,root) %{_bindir}/vmware-hgfsclient
 %attr(755,root,root) %{_bindir}/vmware-namespace-cmd
 %attr(755,root,root) %{_bindir}/vmware-rpctool
@@ -248,7 +245,6 @@ fi
 %dir %{_libdir}/open-vm-tools/plugins
 %dir %{_libdir}/open-vm-tools/plugins/vmsvc
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libdeployPkgPlugin.so
-%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libgrabbitmqProxy.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libguestInfo.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libpowerOps.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libresolutionKMS.so
