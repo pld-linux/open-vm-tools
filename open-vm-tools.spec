@@ -11,13 +11,13 @@
 Summary:	VMWare guest utilities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware
 Name:		open-vm-tools
-Version:	11.0.1
+Version:	11.0.5
 Release:	1
 Epoch:		1
 License:	GPL
 Group:		Applications/System
 Source0:	https://github.com/vmware/open-vm-tools/archive/stable-%{version}.tar.gz
-# Source0-md5:	5545010bb96f745b5fca4f18777d00d8
+# Source0-md5:	e05302d339b5282b97e769be421b22b1
 Source1:	%{name}-packaging
 Source2:	%{name}-modprobe.d
 Source3:	%{name}-init
@@ -25,6 +25,8 @@ Source4:	%{name}-vmware-user.desktop
 Source5:	vmware-vmblock-fuse.service
 Source6:	vmtoolsd.pamd
 Patch0:		%{name}-dnd.patch
+Patch1:		iopl.patch
+Patch2:		log.patch
 URL:		https://github.com/vmware/open-vm-tools
 BuildRequires:	autoconf
 BuildRequires:	doxygen
@@ -137,6 +139,8 @@ Reguły UDEV dla open-vm-tools.
 %prep
 %setup -q -n %{name}-stable-%{version}
 %patch0 -p1
+%patch1 -p1
+%patch2 -p1
 
 cp %{SOURCE1} open-vm-tools/packaging
 
@@ -201,12 +205,13 @@ fi
 %systemd_preun vmware-vmblock-fuse.service
 
 
-%postun -p /sbin/ldconfig
+%postun
+/sbin/ldconfig
 %systemd_reload
 
 %files
 %defattr(644,root,root,755)
-%doc open-vm-tools/AUTHORS open-vm-tools/ChangeLog open-vm-tools/NEWS open-vm-tools/README open-vm-tools/packaging
+%doc README.md ReleaseNotes.md open-vm-tools/AUTHORS open-vm-tools/ChangeLog open-vm-tools/README open-vm-tools/packaging
 %config(noreplace) %verify(not md5 mtime size) /etc/pam.d/vmtoolsd
 %dir /etc/vmware-tools
 %attr(755,root,root) /etc/vmware-tools/*vm-*
@@ -229,6 +234,7 @@ fi
 %attr(755,root,root) %{_bindir}/vmware-toolbox-cmd
 %attr(755,root,root) %{_bindir}/vmware-xferlogs
 %attr(755,root,root) %{_bindir}/vmware-vgauth-cmd
+%attr(755,root,root) %{_bindir}/vmware-vgauth-smoketest
 %attr(755,root,root) %{_bindir}/vmware-vmblock-fuse
 %attr(755,root,root) %{_sbindir}/mount.vmhgfs
 %attr(755,root,root) %{_libdir}/libDeployPkg.so.*.*.*

@@ -115,7 +115,6 @@ start_vmsync() {
 		return
 	fi
 
-	_modprobe single vmsync
 	msg_starting "Open Virtual Machine vmsync script"
 	daemon /usr/bin/vmtoolsd --background /var/run/vmtoolsd.pid
 	RETVAL=$?
