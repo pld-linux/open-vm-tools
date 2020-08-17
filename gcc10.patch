@@ -1,0 +1,39 @@
+From 6578e6a740a027e8957b8af1442277feba022ef9 Mon Sep 17 00:00:00 2001
+From: John Wolfe <jwolfe@vmware.com>
+Date: Fri, 31 Jul 2020 13:36:35 -0700
+Subject: [PATCH] Remove duplicate global definitions.
+
+Remove duplicate and unused global definitions for
+GDK_SELECTION_TYPE_TIMESTAMP and GDK_SELECTION_TYPE_UTF8_STRING.
+
+This fix will address https://github.com/vmware/open-vm-tools/issues/451
+---
+ .../services/plugins/dndcp/copyPasteUIX11.cpp          | 10 +---------
+ 1 file changed, 1 insertion(+), 9 deletions(-)
+
+diff --git a/open-vm-tools/services/plugins/dndcp/copyPasteUIX11.cpp b/open-vm-tools/services/plugins/dndcp/copyPasteUIX11.cpp
+index be8369e74..68212ab8b 100644
+--- a/open-vm-tools/services/plugins/dndcp/copyPasteUIX11.cpp
++++ b/open-vm-tools/services/plugins/dndcp/copyPasteUIX11.cpp
+@@ -1,5 +1,5 @@
+ /*********************************************************
+- * Copyright (C) 2009-2019 VMware, Inc. All rights reserved.
++ * Copyright (C) 2009-2020 VMware, Inc. All rights reserved.
+  *
+  * This program is free software; you can redistribute it and/or modify it
+  * under the terms of the GNU Lesser General Public License as published
+@@ -97,14 +97,6 @@ extern "C" {
+ GdkAtom GDK_SELECTION_CLIPBOARD;
+ #endif
+ 
+-#ifndef GDK_SELECTION_TYPE_TIMESTAMP
+-GdkAtom GDK_SELECTION_TYPE_TIMESTAMP;
+-#endif
+-
+-#ifndef GDK_SELECTION_TYPE_UTF8_STRING
+-GdkAtom GDK_SELECTION_TYPE_UTF8_STRING;
+-#endif
+-
+ 
+ /*
+  *-----------------------------------------------------------------------------

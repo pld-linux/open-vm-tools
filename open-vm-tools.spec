@@ -27,6 +27,7 @@ Source6:	vmtoolsd.pamd
 Patch0:		%{name}-dnd.patch
 Patch1:		iopl.patch
 Patch2:		log.patch
+Patch3:		gcc10.patch
 URL:		https://github.com/vmware/open-vm-tools
 BuildRequires:	autoconf
 BuildRequires:	doxygen
@@ -141,6 +142,7 @@ Reguły UDEV dla open-vm-tools.
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 
 cp %{SOURCE1} open-vm-tools/packaging
 
