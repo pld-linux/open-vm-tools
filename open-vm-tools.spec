@@ -11,13 +11,13 @@
 Summary:	VMWare guest utilities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware
 Name:		open-vm-tools
-Version:	11.0.5
+Version:	11.1.0
 Release:	1
 Epoch:		1
 License:	GPL
 Group:		Applications/System
 Source0:	https://github.com/vmware/open-vm-tools/archive/stable-%{version}.tar.gz
-# Source0-md5:	e05302d339b5282b97e769be421b22b1
+# Source0-md5:	6b52659d0f179007ff0cfee616da3442
 Source1:	%{name}-packaging
 Source2:	%{name}-modprobe.d
 Source3:	%{name}-init
@@ -26,8 +26,7 @@ Source5:	vmware-vmblock-fuse.service
 Source6:	vmtoolsd.pamd
 Patch0:		%{name}-dnd.patch
 Patch1:		iopl.patch
-Patch2:		log.patch
-Patch3:		gcc10.patch
+Patch2:		gcc10.patch
 URL:		https://github.com/vmware/open-vm-tools
 BuildRequires:	autoconf
 BuildRequires:	doxygen
@@ -142,7 +141,6 @@ Reguły UDEV dla open-vm-tools.
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
-%patch3 -p1
 
 cp %{SOURCE1} open-vm-tools/packaging
 
@@ -227,6 +225,7 @@ fi
 %attr(755,root,root) /etc/vmware-tools/scripts/vmware/network
 %attr(755,root,root) /sbin/mount.vmhgfs
 %attr(755,root,root) %{_bindir}/VGAuthService
+%attr(755,root,root) %{_bindir}/vm-support
 %attr(755,root,root) %{_bindir}/vmhgfs-fuse
 %attr(755,root,root) %{_bindir}/vmtoolsd
 %attr(755,root,root) %{_bindir}/vmware-checkvm
@@ -252,6 +251,7 @@ fi
 %dir %{_libdir}/open-vm-tools
 %dir %{_libdir}/open-vm-tools/plugins
 %dir %{_libdir}/open-vm-tools/plugins/vmsvc
+%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libappInfo.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libdeployPkgPlugin.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libguestInfo.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libpowerOps.so
