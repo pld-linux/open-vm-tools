@@ -11,13 +11,13 @@
 Summary:	VMWare guest utilities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware
 Name:		open-vm-tools
-Version:	11.1.0
+Version:	11.1.5
 Release:	1
 Epoch:		1
 License:	GPL
 Group:		Applications/System
 Source0:	https://github.com/vmware/open-vm-tools/archive/stable-%{version}.tar.gz
-# Source0-md5:	6b52659d0f179007ff0cfee616da3442
+# Source0-md5:	706bec982774c445b15155a49e8d28b9
 Source1:	%{name}-packaging
 Source2:	%{name}-modprobe.d
 Source3:	%{name}-init
@@ -26,7 +26,6 @@ Source5:	vmware-vmblock-fuse.service
 Source6:	vmtoolsd.pamd
 Patch0:		%{name}-dnd.patch
 Patch1:		iopl.patch
-Patch2:		gcc10.patch
 URL:		https://github.com/vmware/open-vm-tools
 BuildRequires:	autoconf
 BuildRequires:	doxygen
@@ -42,6 +41,7 @@ BuildRequires:	libmspack-devel
 BuildRequires:	libnotify-devel
 BuildRequires:	libpng-devel
 BuildRequires:	libstdc++-devel
+BuildRequires:	libtirpc-devel
 BuildRequires:	pam-devel
 BuildRequires:	pkgconfig
 BuildRequires:	procps-devel >= 1:3.3.3-2
@@ -140,7 +140,6 @@ Reguły UDEV dla open-vm-tools.
 %setup -q -n %{name}-stable-%{version}
 %patch0 -p1
 %patch1 -p1
-%patch2 -p1
 
 cp %{SOURCE1} open-vm-tools/packaging
 
@@ -154,6 +153,7 @@ install -d config
 %{__autoconf}
 export CUSTOM_PROCPS_NAME=procps
 %configure2_13 \
+	--disable-tests \
 	--without-kernel-modules \
 %if %{with x}
 	--with-x
