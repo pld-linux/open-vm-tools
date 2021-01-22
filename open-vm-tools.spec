@@ -11,13 +11,13 @@
 Summary:	VMWare guest utilities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware
 Name:		open-vm-tools
-Version:	11.2.0
+Version:	11.2.5
 Release:	1
 Epoch:		1
 License:	GPL
 Group:		Applications/System
 Source0:	https://github.com/vmware/open-vm-tools/archive/stable-%{version}.tar.gz
-# Source0-md5:	0841e57eae6ec3bdc5397ff26ed7d7a8
+# Source0-md5:	e00db3286f008b26f2cdd12c9c258d18
 Source1:	%{name}-packaging
 Source2:	%{name}-modprobe.d
 Source3:	%{name}-init
@@ -29,37 +29,42 @@ Patch1:		iopl.patch
 URL:		https://github.com/vmware/open-vm-tools
 BuildRequires:	autoconf
 BuildRequires:	doxygen
-BuildRequires:	glib2-devel >= 2.34.0
-%if %{with x}
-BuildRequires:	gtk+3-devel >= 3.0.0
-BuildRequires:	gtkmm3-devel >= 3.0.0
-%endif
+BuildRequires:	glib2-devel >= 1:2.34.0
 BuildRequires:	libdnet-devel
+BuildRequires:	libdrm-devel
 BuildRequires:	libfuse-devel
 BuildRequires:	libicu-devel
 BuildRequires:	libmspack-devel
-BuildRequires:	libnotify-devel
-BuildRequires:	libpng-devel
 BuildRequires:	libstdc++-devel
 BuildRequires:	libtirpc-devel
+BuildRequires:	openssl-devel >= 1.0.1
 BuildRequires:	pam-devel
 BuildRequires:	pkgconfig
-BuildRequires:	procps-devel >= 1:3.3.3-2
 BuildRequires:	rpmbuild(macros) >= 1.701
-BuildRequires:	uriparser-devel
+BuildRequires:	udev-devel
 BuildRequires:	xmlsec1-devel
 BuildRequires:	xml-security-c-devel
 %if %{with x}
+BuildRequires:	gdk-pixbuf2-xlib-devel >= 2.21.0
+BuildRequires:	gtk+3-devel >= 3.0.0
+BuildRequires:	gtkmm3-devel >= 3.0.0
+BuildRequires:	libsigc++-devel >= 2.5.1
+BuildRequires:	xorg-lib-libICE-devel
 BuildRequires:	xorg-lib-libSM-devel
 BuildRequires:	xorg-lib-libX11-devel
-BuildRequires:	xorg-lib-libXScrnSaver-devel
+BuildRequires:	xorg-lib-libXcomposite-devel
+BuildRequires:	xorg-lib-libXext-devel
+BuildRequires:	xorg-lib-libXi-devel
 BuildRequires:	xorg-lib-libXinerama-devel
 BuildRequires:	xorg-lib-libXrandr-devel
+BuildRequires:	xorg-lib-libXrender-devel
 BuildRequires:	xorg-lib-libXtst-devel
 %endif
 Requires:	ethtool
+Requires:	glib2 >= 1:2.34.0
 Requires:	libdnet
 Requires:	libicu
+Requires:	openssl >= 1.0.1
 ExclusiveArch:	%{ix86} %{x8664} aarch64
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -100,6 +105,8 @@ Summary:	VMware guest utitities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware.
 Group:		Applications/System
 Requires:	%{name} = %{epoch}:%{version}-%{release}
+Requires:	gdk-pixbuf2-xlib >= 2.21.0
+Requires:	libsigc++ >= 2.5.1
 
 %description gui
 VMWare guest utilities. This package contains GUI part of tools.
@@ -151,7 +158,6 @@ install -d config
 %{__aclocal} -I m4
 %{__automake}
 %{__autoconf}
-export CUSTOM_PROCPS_NAME=procps
 %configure2_13 \
 	--disable-tests \
 	--without-kernel-modules \
