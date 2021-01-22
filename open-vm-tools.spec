@@ -40,7 +40,7 @@ BuildRequires:	libtirpc-devel
 BuildRequires:	openssl-devel >= 1.0.1
 BuildRequires:	pam-devel
 BuildRequires:	pkgconfig
-BuildRequires:	rpmbuild(macros) >= 1.701
+BuildRequires:	rpmbuild(macros) >= 1.752
 BuildRequires:	udev-devel
 BuildRequires:	xmlsec1-devel
 BuildRequires:	xml-security-c-devel
@@ -120,9 +120,7 @@ Summary:	VMware API documentation
 Summary(pl.UTF-8):	Dokumentacja do API VMware
 Group:		Documentation
 Requires:	%{name} = %{epoch}:%{version}-%{release}
-%if "%{_rpmversion}" >= "5"
-BuildArch:	noarch
-%endif
+%{?noarchpackage}
 
 %description apidocs
 This package contains VMware API documentation.
