@@ -60,7 +60,7 @@ BuildRequires:	xorg-lib-libXtst-devel
 Requires:	ethtool
 Requires:	libdnet
 Requires:	libicu
-ExclusiveArch:	%{ix86} %{x8664}
+ExclusiveArch:	%{ix86} %{x8664} aarch64
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		skip_post_check_so	libDeployPkg.so.0.0.0
