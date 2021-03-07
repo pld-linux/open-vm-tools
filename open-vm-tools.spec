@@ -120,7 +120,7 @@ Summary:	VMware API documentation
 Summary(pl.UTF-8):	Dokumentacja do API VMware
 Group:		Documentation
 Requires:	%{name} = %{epoch}:%{version}-%{release}
-%{?noarchpackage}
+BuildArch:	noarch
 
 %description apidocs
 This package contains VMware API documentation.
