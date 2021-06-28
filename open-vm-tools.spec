@@ -40,10 +40,11 @@ BuildRequires:	libtirpc-devel
 BuildRequires:	openssl-devel >= 1.0.1
 BuildRequires:	pam-devel
 BuildRequires:	pkgconfig
+BuildRequires:	rpcsvc-proto
 BuildRequires:	rpmbuild(macros) >= 1.752
 BuildRequires:	udev-devel
-BuildRequires:	xmlsec1-devel
 BuildRequires:	xml-security-c-devel
+BuildRequires:	xmlsec1-devel
 %if %{with x}
 BuildRequires:	gdk-pixbuf2-xlib-devel >= 2.21.0
 BuildRequires:	gtk+3-devel >= 3.0.0
@@ -179,9 +180,9 @@ cd open-vm-tools
 ln -sf %{_sbindir}/mount.vmhgfs $RPM_BUILD_ROOT/sbin/mount.vmhgfs
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/open-vm-tools/plugins/common/*.la
 
-#mkdir -p docs/%{name}-%{version}/api
+#install -d docs/%{name}-%{version}/api
 #mv docs/api/build/html docs/%{name}-%{version}/api
-%{__rm} -r $RPM_BUILD_ROOT/usr/share/doc/%{name}
+%{__rm} -r $RPM_BUILD_ROOT%{_docdir}/%{name}
 
 install -d $RPM_BUILD_ROOT/etc/{modprobe.d,rc.d/init.d,xdg/autostart}
 cp %{SOURCE2} $RPM_BUILD_ROOT/etc/modprobe.d/%{name}.conf
@@ -217,21 +218,22 @@ fi
 %defattr(644,root,root,755)
 %doc README.md ReleaseNotes.md open-vm-tools/AUTHORS open-vm-tools/ChangeLog open-vm-tools/README open-vm-tools/packaging
 %config(noreplace) %verify(not md5 mtime size) /etc/pam.d/vmtoolsd
-%dir /etc/vmware-tools
-%attr(755,root,root) /etc/vmware-tools/*vm-*
-/etc/vmware-tools/tools.conf.example
-/etc/vmware-tools/vgauth.conf
-%dir /etc/vmware-tools/vgauth
-/etc/vmware-tools/vgauth/schemas
-%attr(755,root,root) /etc/vmware-tools/statechange.subr
-%dir /etc/vmware-tools/scripts
-%dir /etc/vmware-tools/scripts/vmware
-%attr(755,root,root) /etc/vmware-tools/scripts/vmware/network
+%dir %{_sysconfdir}/vmware-tools
+%attr(755,root,root) %{_sysconfdir}/vmware-tools/*vm-*
+%{_sysconfdir}/vmware-tools/tools.conf.example
+%{_sysconfdir}/vmware-tools/vgauth.conf
+%dir %{_sysconfdir}/vmware-tools/vgauth
+%{_sysconfdir}/vmware-tools/vgauth/schemas
+%attr(755,root,root) %{_sysconfdir}/vmware-tools/statechange.subr
+%dir %{_sysconfdir}/vmware-tools/scripts
+%dir %{_sysconfdir}/vmware-tools/scripts/vmware
+%attr(755,root,root) %{_sysconfdir}/vmware-tools/scripts/vmware/network
 %attr(755,root,root) /sbin/mount.vmhgfs
 %attr(755,root,root) %{_bindir}/VGAuthService
 %attr(755,root,root) %{_bindir}/vm-support
 %attr(755,root,root) %{_bindir}/vmhgfs-fuse
 %attr(755,root,root) %{_bindir}/vmtoolsd
+%attr(755,root,root) %{_bindir}/vmware-alias-import
 %attr(755,root,root) %{_bindir}/vmware-checkvm
 %attr(755,root,root) %{_bindir}/vmware-hgfsclient
 %attr(755,root,root) %{_bindir}/vmware-namespace-cmd
@@ -244,6 +246,8 @@ fi
 %attr(755,root,root) %{_sbindir}/mount.vmhgfs
 %attr(755,root,root) %{_libdir}/libDeployPkg.so.*.*.*
 %attr(755,root,root) %ghost %{_libdir}/libDeployPkg.so.0
+%attr(755,root,root) %{_libdir}/libguestStoreClient.so.*.*.*
+%attr(755,root,root) %ghost %{_libdir}/libguestStoreClient.so.0
 %attr(755,root,root) %{_libdir}/libguestlib.so.*.*.*
 %attr(755,root,root) %ghost %{_libdir}/libguestlib.so.0
 %attr(755,root,root) %{_libdir}/libvgauth.so.*.*.*
@@ -257,7 +261,9 @@ fi
 %dir %{_libdir}/open-vm-tools/plugins/vmsvc
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libappInfo.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libdeployPkgPlugin.so
+%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libgdp.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libguestInfo.so
+%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libguestStore.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libpowerOps.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libresolutionKMS.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libtimeSync.so
@@ -284,6 +290,7 @@ fi
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libDeployPkg.so
 %attr(755,root,root) %{_libdir}/libguestlib.so
+%attr(755,root,root) %{_libdir}/libguestStoreClient.so
 %attr(755,root,root) %{_libdir}/libvgauth.so
 %attr(755,root,root) %{_libdir}/libvmtools.so
 %attr(755,root,root) %{_libdir}/libhgfs.so
@@ -296,6 +303,7 @@ fi
 %{_includedir}/vmGuestLib/vm_basic_types.h
 %{_libdir}/libDeployPkg.la
 %{_libdir}/libguestlib.la
+%{_libdir}/libguestStoreClient.la
 %{_libdir}/libvgauth.la
 %{_libdir}/libvmtools.la
 %{_libdir}/libhgfs.la
@@ -306,6 +314,7 @@ fi
 %defattr(644,root,root,755)
 %{_libdir}/libDeployPkg.a
 %{_libdir}/libguestlib.a
+%{_libdir}/libguestStoreClient.a
 %{_libdir}/libvgauth.a
 %{_libdir}/libvmtools.a
 %{_libdir}/libhgfs.a
@@ -313,6 +322,7 @@ fi
 %if %{with x}
 %files gui
 %defattr(644,root,root,755)
+%attr(755,root,root) %{_bindir}/vmwgfxctrl
 %attr(755,root,root) %{_bindir}/vmware-user
 %attr(4755,root,root) %{_bindir}/vmware-user-suid-wrapper
 %{_sysconfdir}/xdg/autostart/vmware-user.desktop
