@@ -1,11 +1,11 @@
---- open-vm-tools-stable-11.0.5/open-vm-tools/lib/misc/hostinfoPosix.c.orig	2020-01-15 23:24:15.000000000 +0100
-+++ open-vm-tools-stable-11.0.5/open-vm-tools/lib/misc/hostinfoPosix.c	2020-05-11 11:30:05.938853674 +0200
-@@ -2498,7 +2498,7 @@
+--- open-vm-tools-stable-11.3.0/open-vm-tools/lib/misc/hostinfoPosix.c~	2021-06-19 04:15:09.000000000 +0000
++++ open-vm-tools-stable-11.3.0/open-vm-tools/lib/misc/hostinfoPosix.c	2021-06-28 11:13:28.014418113 +0000
+@@ -2878,7 +2878,7 @@
+       Id_SetEUid(0);
        err = iopl(0);
- #endif
        Id_SetEUid(euid);
 -      VERIFY(err == 0);
 +      VERIFY(err == 0 || (err == -1 && errno == ENOSYS));
     }
  #endif
- }
+ #endif
