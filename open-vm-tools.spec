@@ -1,9 +1,3 @@
-# TODO
-# - unpackaged files:
-#        /usr/bin/vmware-vgauth-smoketest
-#        /usr/share/open-vm-tools/tests/libtestDebug.so
-#        /usr/share/open-vm-tools/tests/libtestPlugin.so
-#
 # Conditional build:
 %bcond_without	apidocs		# without API docs
 %bcond_without	x		# build with X11 support
@@ -11,13 +5,13 @@
 Summary:	VMWare guest utilities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware
 Name:		open-vm-tools
-Version:	11.3.0
-Release:	3
+Version:	12.0.5
+Release:	1
 Epoch:		1
 License:	GPL
 Group:		Applications/System
 Source0:	https://github.com/vmware/open-vm-tools/archive/stable-%{version}.tar.gz
-# Source0-md5:	9b138316060f6ae39f58f7377caea31d
+# Source0-md5:	0a90687adb1e21b1079dd9bab5f21e8b
 Source1:	%{name}-packaging
 Source2:	%{name}-modprobe.d
 Source3:	%{name}-init
@@ -89,6 +83,63 @@ Header files for open-vm-tools.
 %description devel -l pl.UTF-8
 Pliki nagłówkowe open-vm-tools.
 
+%package        sdmp
+Summary:	Service Discovery Plugin
+Summary(pl.UTF-8):	Wtyczka Service Discovery
+Group:		Libraries
+Requires:	%{name} = %{version}-%{release}
+
+%description      sdmp
+The Service Discovery plugin connects with the vRealize Operations
+Manager product. This plug-in provides fabric admins with more
+information to better manage VMs at large scale. VMware Tools already
+collects some data from VMs, but it is not sufficient. This plug-in
+collects additional data and relays it to vRealize Operations Manager
+if the management feature is enabled. The plugin is enabled by default
+and can be disabled at any time by the guest administrator inside the
+guest.
+
+%description      sdmp -l pl.UTF-8
+Wtyczka Service Discovery łączy się z produktem vRealize Operations
+Manager. Ta wtyczka zapewnia administratorom sieci szkieletowej więcej
+informacji w celu lepszego zarządzania maszynami wirtualnymi na dużą
+skalę. VMware Tools już zbiera pewne dane z maszyn wirtualnych, ale to
+nie wystarcza. Ta wtyczka zbiera dodatkowe dane i przekazuje je do
+vRealize Operations Manager, jeśli funkcja zarządzania jest włączona.
+Wtyczka jest domyślnie włączona i może zostać wyłączona w dowolnym
+momencie przez administratora gościa wewnątrz gościa.
+
+%package        salt-minion
+Summary:	Script file to install/uninstall salt-minion
+Summary(pl.UTF-8):	Skrypt do instalowania/usuwania salt-minion
+Group:		Libraries
+Requires:	%{name} = %{version}-%{release}
+Requires:	coreutils
+Requires:	curl
+Requires:	gawk
+Requires:	grep
+Requires:	systemd
+ExclusiveArch:	x86_64
+
+%description    salt-minion
+Salt Project is a Python based open-source software for event driven
+IT automation, remote task execution and configuration management.
+Salt requires a salt-minion to be deployed in the guest. Salt specific
+guest variables are set on the host side per VM basis and subsequently
+read by VMware Tools inside guest. VMware Tools then downloads the
+salt bundle and spins up a salt-minion instance inside the guest.
+Supports only 64 bit OSes.
+
+%description    salt-minion -l pl.UTF-8
+Projekt Salt to oparte na języku Python oprogramowanie open source do
+automatyzacji IT sterowanej zdarzeniami, zdalnego wykonywania zadań i
+zarządzania konfiguracją. Salt wymaga użycia salt-minion'a
+uruchomionego w gościu. Zmienne gościa specyficzne dla Salt są
+ustawiane po stronie hosta dla każdej maszyny wirtualnej, a następnie
+odczytywane przez narzędzia VMware Tools wewnątrz gościa. VMware Tools
+następnie pobiera pakiet salt i uruchamia instancję salt-minion
+wewnątrz gościa. Wspierane są tylko 64-bitowe systemy operacyjne
+
 %package static
 Summary:	Static open-vm-tools libraries
 Summary(pl.UTF-8):	Statyczne biblioteki open-vm-tools
@@ -148,6 +199,8 @@ Reguły UDEV dla open-vm-tools.
 %patch1 -p1
 
 cp %{SOURCE1} open-vm-tools/packaging
+%{__sed} -i '1s,%{_bindir}/env bash$,%{__bash},' \
+	open-vm-tools/services/plugins/componentMgr/svtminion.sh
 
 %build
 cd open-vm-tools
@@ -160,6 +213,9 @@ install -d config
 %configure2_13 \
 	--disable-tests \
 	--without-kernel-modules \
+	--enable-resolutionkms \
+	--enable-servicediscovery \
+	--enable-salt-minion \
 %if %{with x}
 	--with-x
 %else
@@ -176,12 +232,8 @@ cd open-vm-tools
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 
-%{__rm} $RPM_BUILD_ROOT/sbin/mount.vmhgfs
-ln -sf %{_sbindir}/mount.vmhgfs $RPM_BUILD_ROOT/sbin/mount.vmhgfs
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/open-vm-tools/plugins/common/*.la
 
-#install -d docs/%{name}-%{version}/api
-#mv docs/api/build/html docs/%{name}-%{version}/api
 %{__rm} -r $RPM_BUILD_ROOT%{_docdir}/%{name}
 
 install -d $RPM_BUILD_ROOT/etc/{modprobe.d,rc.d/init.d,xdg/autostart}
@@ -202,6 +254,9 @@ rm -rf $RPM_BUILD_ROOT
 %service open-vm-tools restart "Open Virtual Machine"
 %systemd_post vmware-vmblock-fuse.service
 
+%post sdmp
+%service open-vm-tools restart "Open Virtual Machine"
+
 %preun
 if [ "$1" = "0" ]; then
 	%service open-vm-tools stop
@@ -209,10 +264,12 @@ if [ "$1" = "0" ]; then
 fi
 %systemd_preun vmware-vmblock-fuse.service
 
-
 %postun
 /sbin/ldconfig
 %systemd_reload
+
+%postun sdmp
+%service open-vm-tools restart "Open Virtual Machine"
 
 %files
 %defattr(644,root,root,755)
@@ -228,7 +285,6 @@ fi
 %dir %{_sysconfdir}/vmware-tools/scripts
 %dir %{_sysconfdir}/vmware-tools/scripts/vmware
 %attr(755,root,root) %{_sysconfdir}/vmware-tools/scripts/vmware/network
-%attr(755,root,root) /sbin/mount.vmhgfs
 %attr(755,root,root) %{_bindir}/VGAuthService
 %attr(755,root,root) %{_bindir}/vm-support
 %attr(755,root,root) %{_bindir}/vmhgfs-fuse
@@ -243,7 +299,6 @@ fi
 %attr(755,root,root) %{_bindir}/vmware-vgauth-cmd
 %attr(755,root,root) %{_bindir}/vmware-vgauth-smoketest
 %attr(755,root,root) %{_bindir}/vmware-vmblock-fuse
-%attr(755,root,root) %{_sbindir}/mount.vmhgfs
 %attr(755,root,root) %{_libdir}/libDeployPkg.so.*.*.*
 %attr(755,root,root) %ghost %{_libdir}/libDeployPkg.so.0
 %attr(755,root,root) %{_libdir}/libguestStoreClient.so.*.*.*
@@ -260,6 +315,7 @@ fi
 %dir %{_libdir}/open-vm-tools/plugins
 %dir %{_libdir}/open-vm-tools/plugins/vmsvc
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libappInfo.so
+%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libcomponentMgr.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libdeployPkgPlugin.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libgdp.so
 %attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libguestInfo.so
@@ -309,6 +365,24 @@ fi
 %{_libdir}/libhgfs.la
 %{_pkgconfigdir}/libDeployPkg.pc
 %{_pkgconfigdir}/vmguestlib.pc
+
+%ifarch x86_64
+%files salt-minion
+%defattr(644,root,root,755)
+%dir %{_libdir}/%{name}/componentMgr/
+%dir %{_libdir}/%{name}/componentMgr/saltMinion/
+%attr(755,root,root) %{_libdir}/%{name}/componentMgr/saltMinion/svtminion.sh
+%endif
+
+%files sdmp
+%defattr(644,root,root,755)
+%dir %{_libdir}/%{name}/serviceDiscovery/
+%dir %{_libdir}/%{name}/serviceDiscovery/scripts/
+%attr(755,root,root) %{_libdir}/%{name}/plugins/vmsvc/libserviceDiscovery.so
+%attr(755,root,root) %{_libdir}/%{name}/serviceDiscovery/scripts/get-connection-info.sh
+%attr(755,root,root) %{_libdir}/%{name}/serviceDiscovery/scripts/get-listening-process-info.sh
+%attr(755,root,root) %{_libdir}/%{name}/serviceDiscovery/scripts/get-listening-process-perf-metrics.sh
+%attr(755,root,root) %{_libdir}/%{name}/serviceDiscovery/scripts/get-versions.sh
 
 %files static
 %defattr(644,root,root,755)
