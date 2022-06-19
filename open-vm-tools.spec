@@ -6,7 +6,7 @@ Summary:	VMWare guest utilities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware
 Name:		open-vm-tools
 Version:	12.0.5
-Release:	1
+Release:	2
 Epoch:		1
 License:	GPL
 Group:		Applications/System
@@ -87,7 +87,7 @@ Pliki nagłówkowe open-vm-tools.
 Summary:	Service Discovery Plugin
 Summary(pl.UTF-8):	Wtyczka Service Discovery
 Group:		Libraries
-Requires:	%{name} = %{version}-%{release}
+Requires:	%{name} = %{epoch}:%{version}-%{release}
 
 %description      sdmp
 The Service Discovery plugin connects with the vRealize Operations
@@ -113,7 +113,7 @@ momencie przez administratora gościa wewnątrz gościa.
 Summary:	Script file to install/uninstall salt-minion
 Summary(pl.UTF-8):	Skrypt do instalowania/usuwania salt-minion
 Group:		Libraries
-Requires:	%{name} = %{version}-%{release}
+Requires:	%{name} = %{epoch}:%{version}-%{release}
 Requires:	coreutils
 Requires:	curl
 Requires:	gawk
