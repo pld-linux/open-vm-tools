@@ -35,6 +35,7 @@ BuildRequires:	openssl-devel >= 1.0.1
 BuildRequires:	pam-devel
 BuildRequires:	pkgconfig
 BuildRequires:	rpcsvc-proto
+BuildRequires:	rpm-build >= 4.6
 BuildRequires:	rpmbuild(macros) >= 1.752
 BuildRequires:	udev-devel
 BuildRequires:	xml-security-c-devel
