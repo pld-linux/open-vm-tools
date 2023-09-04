@@ -5,13 +5,13 @@
 Summary:	VMWare guest utilities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware
 Name:		open-vm-tools
-Version:	12.2.5
+Version:	12.3.0
 Release:	1
 Epoch:		1
 License:	GPL
 Group:		Applications/System
 Source0:	https://github.com/vmware/open-vm-tools/archive/stable-%{version}.tar.gz
-# Source0-md5:	dfb214ea6f583a29eb38b9af7eda40c2
+# Source0-md5:	7f4c11b8e63a1cae6a77d80dd353a792
 Source1:	%{name}-packaging
 Source2:	%{name}-modprobe.d
 Source3:	%{name}-init
@@ -41,7 +41,6 @@ BuildRequires:	udev-devel
 BuildRequires:	xml-security-c-devel
 BuildRequires:	xmlsec1-devel
 %if %{with x}
-BuildRequires:	gdk-pixbuf2-xlib-devel >= 2.21.0
 BuildRequires:	gtk+3-devel >= 3.0.0
 BuildRequires:	gtkmm3-devel >= 3.0.0
 BuildRequires:	libsigc++-devel >= 2.5.1
@@ -158,7 +157,6 @@ Summary:	VMware guest utitities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware.
 Group:		Applications/System
 Requires:	%{name} = %{epoch}:%{version}-%{release}
-Requires:	gdk-pixbuf2-xlib >= 2.21.0
 Requires:	libsigc++ >= 2.5.1
 
 %description gui
