@@ -5,13 +5,13 @@
 Summary:	VMWare guest utilities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware
 Name:		open-vm-tools
-Version:	12.3.0
+Version:	12.3.5
 Release:	1
 Epoch:		1
 License:	GPL
 Group:		Applications/System
 Source0:	https://github.com/vmware/open-vm-tools/archive/stable-%{version}.tar.gz
-# Source0-md5:	7f4c11b8e63a1cae6a77d80dd353a792
+# Source0-md5:	05e69df3db63e5cd0c43146a2193b2aa
 Source1:	%{name}-packaging
 Source2:	%{name}-modprobe.d
 Source3:	%{name}-init
