@@ -5,13 +5,13 @@
 Summary:	VMWare guest utilities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware
 Name:		open-vm-tools
-Version:	12.3.5
+Version:	12.4.0
 Release:	1
 Epoch:		1
 License:	GPL
 Group:		Applications/System
 Source0:	https://github.com/vmware/open-vm-tools/archive/stable-%{version}.tar.gz
-# Source0-md5:	05e69df3db63e5cd0c43146a2193b2aa
+# Source0-md5:	3fa88749cd76c0711a1aceeed41495f8
 Source1:	%{name}-packaging
 Source2:	%{name}-modprobe.d
 Source3:	%{name}-init
@@ -26,19 +26,21 @@ BuildRequires:	doxygen
 BuildRequires:	glib2-devel >= 1:2.34.0
 BuildRequires:	libdnet-devel
 BuildRequires:	libdrm-devel
-BuildRequires:	libfuse-devel
+BuildRequires:	libfuse3-devel >= 3.10.0
 BuildRequires:	libicu-devel
 BuildRequires:	libmspack-devel
 BuildRequires:	libstdc++-devel
 BuildRequires:	libtirpc-devel
+BuildRequires:	libxml2-devel
+BuildRequires:	mscgen
 BuildRequires:	openssl-devel >= 1.0.1
 BuildRequires:	pam-devel
 BuildRequires:	pkgconfig
+BuildRequires:	protobuf-devel >= 3.0.0
 BuildRequires:	rpcsvc-proto
 BuildRequires:	rpm-build >= 4.6
 BuildRequires:	rpmbuild(macros) >= 1.752
 BuildRequires:	udev-devel
-BuildRequires:	xml-security-c-devel
 BuildRequires:	xmlsec1-devel
 %if %{with x}
 BuildRequires:	gtk+3-devel >= 3.0.0
