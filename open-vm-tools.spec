@@ -5,14 +5,14 @@
 Summary:	VMWare guest utilities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware
 Name:		open-vm-tools
-Version:	13.0.5
+Version:	13.0.10
 Release:	1
 Epoch:		1
 License:	GPL
 Group:		Applications/System
 #Source0:	https://github.com/vmware/open-vm-tools/archive/%{version}.tar.xz
 Source0:	https://github.com/vmware/open-vm-tools/archive/refs/tags/stable-%{version}.tar.gz
-# Source0-md5:	4c6045ab200588c11f5262933f230487
+# Source0-md5:	87c4f55f1e39d1ae321e576898eb9c47
 Source1:	%{name}-packaging
 Source2:	%{name}-modprobe.d
 Source3:	%{name}-init
@@ -197,8 +197,8 @@ Reguły UDEV dla open-vm-tools.
 
 %prep
 %setup -q -n %{name}-stable-%{version}
-%patch -P 0 -p1
-%patch -P 1 -p1
+%patch -P0 -p1
+%patch -P1 -p1
 
 cp %{SOURCE1} open-vm-tools/packaging
 %{__sed} -i '1s,%{_bindir}/env bash$,%{__bash},' \
@@ -301,34 +301,34 @@ fi
 %attr(755,root,root) %{_bindir}/vmware-vgauth-cmd
 %attr(755,root,root) %{_bindir}/vmware-vgauth-smoketest
 %attr(755,root,root) %{_bindir}/vmware-vmblock-fuse
-%attr(755,root,root) %{_libdir}/libDeployPkg.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libDeployPkg.so.0
-%attr(755,root,root) %{_libdir}/libguestStoreClient.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libguestStoreClient.so.0
-%attr(755,root,root) %{_libdir}/libguestlib.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libguestlib.so.0
-%attr(755,root,root) %{_libdir}/libvgauth.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libvgauth.so.0
-%attr(755,root,root) %{_libdir}/libvmtools.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libvmtools.so.0
-%attr(755,root,root) %{_libdir}/libhgfs.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libhgfs.so.0
+%{_libdir}/libDeployPkg.so.*.*.*
+%ghost %{_libdir}/libDeployPkg.so.0
+%{_libdir}/libguestStoreClient.so.*.*.*
+%ghost %{_libdir}/libguestStoreClient.so.0
+%{_libdir}/libguestlib.so.*.*.*
+%ghost %{_libdir}/libguestlib.so.0
+%{_libdir}/libvgauth.so.*.*.*
+%ghost %{_libdir}/libvgauth.so.0
+%{_libdir}/libvmtools.so.*.*.*
+%ghost %{_libdir}/libvmtools.so.0
+%{_libdir}/libhgfs.so.*.*.*
+%ghost %{_libdir}/libhgfs.so.0
 %dir %{_libdir}/open-vm-tools
 %dir %{_libdir}/open-vm-tools/plugins
 %dir %{_libdir}/open-vm-tools/plugins/vmsvc
-%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libappInfo.so
-%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libcomponentMgr.so
-%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libdeployPkgPlugin.so
-%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libgdp.so
-%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libguestInfo.so
-%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libguestStore.so
-%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libpowerOps.so
-%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libresolutionKMS.so
-%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libtimeSync.so
-%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmsvc/libvmbackup.so
+%{_libdir}/open-vm-tools/plugins/vmsvc/libappInfo.so
+%{_libdir}/open-vm-tools/plugins/vmsvc/libcomponentMgr.so
+%{_libdir}/open-vm-tools/plugins/vmsvc/libdeployPkgPlugin.so
+%{_libdir}/open-vm-tools/plugins/vmsvc/libgdp.so
+%{_libdir}/open-vm-tools/plugins/vmsvc/libguestInfo.so
+%{_libdir}/open-vm-tools/plugins/vmsvc/libguestStore.so
+%{_libdir}/open-vm-tools/plugins/vmsvc/libpowerOps.so
+%{_libdir}/open-vm-tools/plugins/vmsvc/libresolutionKMS.so
+%{_libdir}/open-vm-tools/plugins/vmsvc/libtimeSync.so
+%{_libdir}/open-vm-tools/plugins/vmsvc/libvmbackup.so
 %dir %{_libdir}/open-vm-tools/plugins/common
-%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/common/libhgfsServer.so
-%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/common/libvix.so
+%{_libdir}/open-vm-tools/plugins/common/libhgfsServer.so
+%{_libdir}/open-vm-tools/plugins/common/libvix.so
 %attr(754,root,root) /etc/rc.d/init.d/%{name}
 %{systemdunitdir}/vmware-vmblock-fuse.service
 /etc/modprobe.d/%{name}.conf
@@ -346,12 +346,12 @@ fi
 
 %files devel
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libDeployPkg.so
-%attr(755,root,root) %{_libdir}/libguestlib.so
-%attr(755,root,root) %{_libdir}/libguestStoreClient.so
-%attr(755,root,root) %{_libdir}/libvgauth.so
-%attr(755,root,root) %{_libdir}/libvmtools.so
-%attr(755,root,root) %{_libdir}/libhgfs.so
+%{_libdir}/libDeployPkg.so
+%{_libdir}/libguestlib.so
+%{_libdir}/libguestStoreClient.so
+%{_libdir}/libvgauth.so
+%{_libdir}/libvmtools.so
+%{_libdir}/libhgfs.so
 %dir %{_includedir}/libDeployPkg
 %{_includedir}/libDeployPkg/*.h
 %dir %{_includedir}/vmGuestLib
@@ -380,7 +380,7 @@ fi
 %defattr(644,root,root,755)
 %dir %{_libdir}/%{name}/serviceDiscovery/
 %dir %{_libdir}/%{name}/serviceDiscovery/scripts/
-%attr(755,root,root) %{_libdir}/%{name}/plugins/vmsvc/libserviceDiscovery.so
+%{_libdir}/%{name}/plugins/vmsvc/libserviceDiscovery.so
 %attr(755,root,root) %{_libdir}/%{name}/serviceDiscovery/scripts/get-connection-info.sh
 %attr(755,root,root) %{_libdir}/%{name}/serviceDiscovery/scripts/get-listening-process-info.sh
 %attr(755,root,root) %{_libdir}/%{name}/serviceDiscovery/scripts/get-listening-process-perf-metrics.sh
@@ -403,9 +403,9 @@ fi
 %attr(4755,root,root) %{_bindir}/vmware-user-suid-wrapper
 %{_sysconfdir}/xdg/autostart/vmware-user.desktop
 %dir %{_libdir}/open-vm-tools/plugins/vmusr
-%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libdesktopEvents.so
-%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libdndcp.so
-%attr(755,root,root) %{_libdir}/open-vm-tools/plugins/vmusr/libresolutionSet.so
+%{_libdir}/open-vm-tools/plugins/vmusr/libdesktopEvents.so
+%{_libdir}/open-vm-tools/plugins/vmusr/libdndcp.so
+%{_libdir}/open-vm-tools/plugins/vmusr/libresolutionSet.so
 %endif
 
 %if %{with apidocs}
