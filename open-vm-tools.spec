@@ -21,6 +21,7 @@ Source5:	vmware-vmblock-fuse.service
 Source6:	vmtoolsd.pamd
 Patch0:		%{name}-dnd.patch
 Patch1:		iopl.patch
+Patch2:		gcc15.patch
 URL:		https://github.com/vmware/open-vm-tools
 BuildRequires:	autoconf
 BuildRequires:	doxygen
@@ -197,12 +198,14 @@ Reguły UDEV dla open-vm-tools.
 
 %prep
 %setup -q -n %{name}-stable-%{version}
-%patch -P0 -p1
-%patch -P1 -p1
+cd open-vm-tools
+%patch -P0 -p2
+%patch -P1 -p2
+%patch -P2 -p1
 
-cp %{SOURCE1} open-vm-tools/packaging
+cp %{SOURCE1} packaging
 %{__sed} -i '1s,%{_bindir}/env bash$,%{__bash},' \
-	open-vm-tools/services/plugins/componentMgr/svtminion.sh
+	services/plugins/componentMgr/svtminion.sh
 
 %build
 cd open-vm-tools
