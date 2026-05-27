@@ -5,14 +5,14 @@
 Summary:	VMWare guest utilities
 Summary(pl.UTF-8):	Narzędzia dla systemu-gościa dla VMware
 Name:		open-vm-tools
-Version:	13.0.10
-Release:	2
+Version:	13.1.0
+Release:	1
 Epoch:		1
 License:	GPL
 Group:		Applications/System
 #Source0:	https://github.com/vmware/open-vm-tools/archive/%{version}.tar.xz
 Source0:	https://github.com/vmware/open-vm-tools/archive/refs/tags/stable-%{version}.tar.gz
-# Source0-md5:	87c4f55f1e39d1ae321e576898eb9c47
+# Source0-md5:	241c51dddf288cf9722cab9b3334e56a
 Source1:	%{name}-packaging
 Source2:	%{name}-modprobe.d
 Source3:	%{name}-init
@@ -222,7 +222,8 @@ install -d config
 	--enable-servicediscovery \
 	--enable-salt-minion \
 %if %{with x}
-	--with-x
+	--with-x \
+	--without-gtk4
 %else
 	--without-x
 %endif
